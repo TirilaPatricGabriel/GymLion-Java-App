@@ -7,6 +7,8 @@ import classes.Event;
 import classes.FitnessChallenge;
 import classes.Investor;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 public class Main {
     public static void main(String[] args) {
         //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
@@ -18,5 +20,9 @@ public class Main {
             // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
             System.out.println("i = " + i);
         }
+        LocalDate specificDate = LocalDate.of(2023, 5, 15);
+        Event ev = new Event(specificDate);
+        String formattedDate = ev.getMyDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        System.out.printf(formattedDate);
     }
 }
