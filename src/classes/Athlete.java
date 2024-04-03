@@ -1,9 +1,8 @@
 package classes;
 
 public class Athlete extends Person {
-    double salary;
-    int socialMediaFollowers;
-    double bonusPerTenThousandLikes;
+    private double salary, bonusPerTenThousandLikes;
+    private int socialMediaFollowers;
 
     public Athlete(String name, String email, String phone, String address, double salary, int socialMediaFollowers, double bonusPerTenThousandLikes) {
         super(name, email, phone, address);

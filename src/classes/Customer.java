@@ -1,7 +1,7 @@
 package classes;
 
 public class Customer extends Person {
-    double balance;
+    private double balance;
 
     // Constructor
     public Customer(String name, String email, String phone, String address, double balance) {

@@ -1,9 +1,13 @@
 package classes;
 
+import java.util.concurrent.atomic.AtomicInteger;
 class Person {
+    private static final AtomicInteger count = new AtomicInteger(0);
+    private final int id;
     private String name, email, phone, address;
 
     public Person(String name, String email, String phone, String address) {
+        this.id = count.incrementAndGet();
         this.name = name;
         this.email = email;
         this.phone = phone;
@@ -18,6 +22,9 @@ class Person {
     }
 
     // Getters
+    public int getId() {
+        return this.id;
+    }
     public String getName () {
         return this.name;
     }
