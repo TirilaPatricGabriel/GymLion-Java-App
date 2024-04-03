@@ -7,6 +7,7 @@ import classes.Event;
 import classes.FitnessChallenge;
 import classes.Investor;
 import classes.Location;
+import classes.Gym;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
