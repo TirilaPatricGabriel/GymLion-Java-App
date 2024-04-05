@@ -1,7 +1,7 @@
 package classes;
 
 import java.util.concurrent.atomic.AtomicInteger;
-class Person {
+public class Person {
     private static final AtomicInteger count = new AtomicInteger(0);
     private final int id;
     private String name, email, phone, address;
