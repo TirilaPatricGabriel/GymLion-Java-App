@@ -46,6 +46,29 @@ public class AthleteService {
         athleteRepository.add(entity);
     }
 
+    public Athlete get(int index) throws InvalidDataException {
+        if (index < 0) {
+            throw new InvalidDataException("Index can't be lower than 0");
+        }
+        return athleteRepository.get(index);
+    }
+
+    public void update(int index) throws InvalidDataException {
+        if (index < 0) {
+            throw new InvalidDataException("Index can't be lower than 0");
+        }
+        Athlete atl = athleteRepository.get(index);
+        athleteRepository.update(atl);
+    }
+
+    public void delete(int index) throws InvalidDataException {
+        if (index < 0) {
+            throw new InvalidDataException("Index can't be lower than 0");
+        }
+        Athlete atl = athleteRepository.get(index);
+        athleteRepository.delete(atl);
+    }
+
     public void deleteExpensiveAthletes (Integer percent) throws InvalidDataException {
         if (percent <= 0) {
             throw new InvalidDataException("Invalid dates");
