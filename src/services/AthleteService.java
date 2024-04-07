@@ -10,7 +10,7 @@ import java.util.List;
 
 public class AthleteService {
 
-    private AthleteRepository AthleteRepository = new AthleteRepository();
+    private AthleteRepository athleteRepository = new AthleteRepository();
 
     public void registerNewEntity(String name, String email, String phone, String address, double salary, int socialMediaFollowers, double bonusPerTenThousandLikes) throws InvalidDataException {
 
@@ -43,6 +43,13 @@ public class AthleteService {
         }
 
         Athlete entity = new Athlete(name, email, phone, address, salary, socialMediaFollowers, bonusPerTenThousandLikes);
-        AthleteRepository.add(entity);
+        athleteRepository.add(entity);
+    }
+
+    public void deleteExpensiveAthletes (Integer percent) throws InvalidDataException {
+        if (percent <= 0) {
+            throw new InvalidDataException("Invalid dates");
+        }
+        athleteRepository.deleteExpensiveAthletes(percent);
     }
 }
