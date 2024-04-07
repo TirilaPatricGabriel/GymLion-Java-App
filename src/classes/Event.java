@@ -31,8 +31,31 @@ public class Event {
         return this.id;
     }
 
-    public LocalDate getMyDate() {
+    public LocalDate getStartDate() {
         return this.startDate;
+    }
+    public LocalDate getEndDate() {
+        return this.endDate;
+    }
+
+    public Location getLocation() {
+        return this.location;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public Integer getCapacity() {
+        return capacity;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
     }
 
     public void setMyDate(LocalDate startDate) {

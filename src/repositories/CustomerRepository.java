@@ -2,7 +2,9 @@ package repositories;
 
 import classes.Customer;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Repositories are responsible for interacting with the storage of entities. Usually a 1-to-1 relation with the
@@ -52,5 +54,36 @@ public class CustomerRepository implements GenericRepository<Customer> {
     @Override
     public int getSize() {
         return storage.length;
+    }
+
+    public int getCustomerWithMostOrders (OrderRepository orderRepo) {
+        Integer max = -1, customerId = -1;
+        for (int i=0; i<storage.length; i++) {
+            Customer customer = storage[i];
+            Integer nrOfOrders = orderRepo.getNumberOfOrdersOfCustomer(customer.getId());
+            if (nrOfOrders > max) {
+                max = nrOfOrders;
+                customerId = customer.getId();
+            }
+        }
+        return customerId;
+    }
+
+    public ArrayList<Integer> getAllCustomersThatCompletedChallenge(int challengeId) {
+        ArrayList<Integer> customerIds = null;
+        for (int i=0; i<storage.length; i++) {
+            if (storage[i] != null) {
+                ArrayList<Integer> challengeIds = storage[i].getChallengesCompletedIds();
+                if (challengeIds.contains(challengeId)) {
+                    customerIds.add(storage[i].getId());
+                }
+            }
+        }
+        return customerIds;
+    }
+
+    public void rewardCustomerOfTheMonth (OrderRepository orderRepo, Integer reward) {
+        int customerId = this.getCustomerWithMostOrders(orderRepo);
+        storage[customerId].setBalance(storage[customerId].getBalance() + reward);
     }
 }

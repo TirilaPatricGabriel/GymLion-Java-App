@@ -2,6 +2,7 @@ package repositories;
 
 import classes.Location;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -52,5 +53,41 @@ public class LocationRepository implements GenericRepository<Location> {
     @Override
     public int getSize() {
         return storage.length;
+    }
+
+    public ArrayList<Location> mostFrequentLocations(EventRepository eventRepo) {
+        Integer max1 = 0, max2 = 0, max3 = 0;
+        Location l1 = null, l2 = null, l3 = null;
+        for (int i=0; i<storage.length; i++) {
+            Location location = storage[i];
+            Integer nr = eventRepo.getNumberOfEventsFromLocation(location.getId());
+            if (nr > max1) {
+                if (max1 > max2) {
+                    if (max2 > max3) {
+                        max3 = max2;
+                        l3 = l2;
+                    }
+                    max2 = max1;
+                    l2 = l1;
+                }
+                max1 = nr;
+                l1 = location;
+            } else if (nr > max2) {
+                if (max2 > max3) {
+                    max3 = max2;
+                    l3 = l2;
+                }
+                max2 = nr;
+                l2 = location;
+            } else if (nr > max3) {
+                max3 = nr;
+                l3 = location;
+            }
+        }
+        ArrayList<Location> res = new ArrayList<>();
+        res.add(l1);
+        res.add(l2);
+        res.add(l3);
+        return res;
     }
 }

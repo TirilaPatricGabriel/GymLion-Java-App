@@ -54,4 +54,11 @@ public class AthleteRepository implements GenericRepository<Athlete> {
         return storage.length;
     }
 
+    public void deleteExpensiveAthletes (Integer percent) {
+        for (int i=0; i<storage.length; i++) {
+            if (storage[i] != null && (storage[i].getSocialMediaFollowers() * (percent / 100)) < storage[i].getSalary()) {
+                storage[i] = null;
+            }
+        }
+    }
 }

@@ -2,6 +2,7 @@ package repositories;
 
 import classes.FitnessChallenge;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -52,5 +53,23 @@ public class FitnessChallengeRepository implements GenericRepository<FitnessChal
     @Override
     public int getSize() {
         return storage.length;
+    }
+
+    public ArrayList<Integer> getAllCustomersThatCompletedChallenge (CustomerRepository customerRepo, String challengeName) {
+        int challengeId = -1;
+        for (int i=0; i<storage.length; i++) {
+            if (storage[i] != null && storage[i].getName().equals(challengeName)) {
+                challengeId = storage[i].getId();
+            }
+        }
+        return customerRepo.getAllCustomersThatCompletedChallenge(challengeId);
+    }
+
+    public void upgradeChallenge(CustomerRepository customerRepo, Integer numberOfCompletions, Integer points) {
+        for (int i=0; i<storage.length; i++) {
+            if (getAllCustomersThatCompletedChallenge(customerRepo, storage[i].getName()).size() < numberOfCompletions) {
+                storage[i].setPoints(storage[i].getPoints() + points);
+            }
+        }
     }
 }

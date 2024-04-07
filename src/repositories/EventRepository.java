@@ -3,6 +3,11 @@ package repositories;
 import classes.Event;
 
 import java.util.Arrays;
+import java.util.ArrayList;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Objects;
+
 
 /**
  * Repositories are responsible for interacting with the storage of entities. Usually a 1-to-1 relation with the
@@ -52,5 +57,36 @@ public class EventRepository implements GenericRepository<Event> {
     @Override
     public int getSize() {
         return storage.length;
+    }
+
+    public ArrayList<HashMap<String, String>> getAllEventsFromAPlaceWithinAPeriod (LocalDate startDate, LocalDate endDate, String countryName) {
+        ArrayList<HashMap<String, String>> res = new ArrayList<>();
+        for (int i = 0; i < storage.length; i++) {
+            if (storage[i] != null && storage[i].getStartDate().compareTo(startDate) >= 0 && storage[i].getEndDate().compareTo(endDate) <= 0 && Objects.equals(storage[i].getLocation().getCountryName(), countryName)) {
+                HashMap<String, String> obj = new HashMap<>();
+                obj.put("name", storage[i].getName());
+                obj.put("description", storage[i].getDescription());
+                break;
+            }
+        }
+        return res;
+    }
+
+    public void deleteAllEventsThatAlreadyTookPlace () {
+        for (int i=0; i<storage.length; i++) {
+            if (storage[i] != null && storage[i].getEndDate().compareTo(LocalDate.now()) < 0) {
+                storage[i] = null;
+            }
+        }
+    }
+
+    public Integer getNumberOfEventsFromLocation(Integer locId) {
+        Integer nr = 0;
+        for (int i=0; i<storage.length; i++) {
+            if (storage[i].getLocation().getId() == locId) {
+                nr += 1;
+            }
+        }
+        return nr;
     }
 }

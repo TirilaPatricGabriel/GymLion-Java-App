@@ -3,6 +3,7 @@ package repositories;
 import classes.Gym;
 
 import java.util.Arrays;
+import java.util.ArrayList;
 
 /**
  * Repositories are responsible for interacting with the storage of entities. Usually a 1-to-1 relation with the
@@ -30,6 +31,31 @@ public class GymRepository implements GenericRepository<Gym> {
         return storage[index];
     }
 
+    public ArrayList<String> findGymsBasedOnMembershipPrices(GymMembershipRepository membershipRepository, Integer startPrice, Integer endPrice) {
+        startPrice = (startPrice != null && startPrice >= 0) ? startPrice : 0;
+        endPrice = (endPrice != null && endPrice >= 0) ? endPrice : Integer.MAX_VALUE;
+        ArrayList<String> gyms = new ArrayList<>();
+        ArrayList<Integer> gymIds = GymMembershipRepository.getGymIdsOfMembershipsWithPricesWithinALimit(startPrice, endPrice);
+
+        for (int i = 0; i < storage.length; i++) {
+            if (storage[i] != null) {
+                if (gymIds.contains(storage[i].getId())) {
+                    gyms.add(storage[i].getName());
+                }
+                break;
+            }
+        }
+
+        return gyms;
+    }
+
+    public void changeMembershipPrices (GymMembershipRepository membershipRepository, String gymName, Integer percent) {
+        for (int i=0; i<storage.length; i++) {
+            if (storage[i] != null && storage[i].getName().equals(gymName)) {
+                membershipRepository.changeMembershipPricesOfSelectGym(storage[i].getId(), percent);
+            }
+        }
+    }
     @Override
     public void update(Gym entity) {
         for (int i=0; i<storage.length; i++) {
