@@ -29,7 +29,12 @@ public class CustomerRepository implements GenericRepository<Customer> {
 
     @Override
     public Customer get(int index) {
-        return storage[index];
+        for (int i=0; i<storage.length; i++) {
+            if (storage[i] != null && storage[i].getId() == index) {
+                return storage[i];
+            }
+        }
+        return storage[0];
     }
 
     @Override
@@ -59,18 +64,19 @@ public class CustomerRepository implements GenericRepository<Customer> {
     public int getCustomerWithMostOrders (OrderRepository orderRepo) {
         Integer max = -1, customerId = -1;
         for (int i=0; i<storage.length; i++) {
-            Customer customer = storage[i];
-            Integer nrOfOrders = orderRepo.getNumberOfOrdersOfCustomer(customer.getId());
-            if (nrOfOrders > max) {
-                max = nrOfOrders;
-                customerId = customer.getId();
+            if (storage[i] != null) {
+                Integer nrOfOrders = orderRepo.getNumberOfOrdersOfCustomer(storage[i].getId());
+                if (nrOfOrders > max) {
+                    max = nrOfOrders;
+                    customerId = storage[i].getId();
+                }
             }
         }
         return customerId;
     }
 
     public ArrayList<Integer> getAllCustomersThatCompletedChallenge(int challengeId) {
-        ArrayList<Integer> customerIds = null;
+        ArrayList<Integer> customerIds = new ArrayList<>();
         for (int i=0; i<storage.length; i++) {
             if (storage[i] != null) {
                 ArrayList<Integer> challengeIds = storage[i].getChallengesCompletedIds();
@@ -82,8 +88,16 @@ public class CustomerRepository implements GenericRepository<Customer> {
         return customerIds;
     }
 
-    public void rewardCustomerOfTheMonth (OrderRepository orderRepo, Integer reward) {
+    public Integer rewardCustomerOfTheMonth (OrderRepository orderRepo, Integer reward) {
         int customerId = this.getCustomerWithMostOrders(orderRepo);
-        storage[customerId].setBalance(storage[customerId].getBalance() + reward);
+        System.out.println("CUSTOMER OF THE MONTH ID:" + customerId);
+        for (int i=0; i<storage.length; i++) {
+            if (storage[i] != null && storage[i].getId() == customerId) {
+                System.out.println("FOUND HIM!");
+                storage[i].setBalance(storage[i].getBalance() + reward);
+                break;
+            }
+        }
+        return customerId;
     }
 }

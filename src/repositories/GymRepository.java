@@ -31,7 +31,7 @@ public class GymRepository implements GenericRepository<Gym> {
         return storage[index];
     }
 
-    public ArrayList<String> findGymsBasedOnMembershipPrices(GymMembershipRepository membershipRepository, Integer startPrice, Integer endPrice) {
+    public ArrayList<String> findGymsBasedOnMembershipPrices(Double startPrice, Double endPrice) {
         startPrice = (startPrice != null && startPrice >= 0) ? startPrice : 0;
         endPrice = (endPrice != null && endPrice >= 0) ? endPrice : Integer.MAX_VALUE;
         ArrayList<String> gyms = new ArrayList<>();
@@ -50,6 +50,7 @@ public class GymRepository implements GenericRepository<Gym> {
     }
 
     public void changeMembershipPrices (GymMembershipRepository membershipRepository, String gymName, Integer percent) {
+        System.out.println("DEBUG: " + gymName + " " + percent);
         for (int i=0; i<storage.length; i++) {
             if (storage[i] != null && storage[i].getName().equals(gymName)) {
                 membershipRepository.changeMembershipPricesOfSelectGym(storage[i].getId(), percent);

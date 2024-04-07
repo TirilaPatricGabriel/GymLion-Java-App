@@ -3,7 +3,7 @@ package classes;
 import java.util.ArrayList;
 public class Customer extends Person {
     private double balance;
-    private ArrayList<FitnessChallenge> challengesCompleted;
+    private ArrayList<FitnessChallenge> challengesCompleted = new ArrayList<>();
 
     // Constructor
     public Customer(String name, String email, String phone, String address, double balance, ArrayList<FitnessChallenge> challengesCompleted) {
@@ -25,7 +25,7 @@ public class Customer extends Person {
         return this.challengesCompleted;
     }
     public ArrayList<Integer> getChallengesCompletedIds() {
-        ArrayList<Integer> challengesCompletedIds = null;
+        ArrayList<Integer> challengesCompletedIds = new ArrayList<>();
         for (int i=0; i<this.challengesCompleted.size(); i++) {
             if (challengesCompleted.get(i) != null) {
                 challengesCompletedIds.add(challengesCompleted.get(i).getId());
@@ -35,6 +35,7 @@ public class Customer extends Person {
     }
 
     public void setBalance(double balance) {
+        System.out.println("BALANCE NEW:" + balance);
         this.balance = balance;
     }
     public void addChallengeToCompleted (FitnessChallenge challenge) {

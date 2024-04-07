@@ -15,7 +15,7 @@ import java.util.Objects;
  * */
 public class EventRepository implements GenericRepository<Event> {
 
-    private Event[] storage = new Event[10];
+    private Event[] storage = new Event[100];
 
     @Override
     public void add(Event entity) {
@@ -59,13 +59,14 @@ public class EventRepository implements GenericRepository<Event> {
         return storage.length;
     }
 
-    public ArrayList<HashMap<String, String>> getAllEventsFromAPlaceWithinAPeriod (LocalDate startDate, LocalDate endDate, String countryName) {
+    public ArrayList<HashMap<String, String>> getAllEventsFromAPlaceWithinAPeriod (LocalDate startDate, LocalDate endDate, String countryName, LocationRepository locRepo) {
         ArrayList<HashMap<String, String>> res = new ArrayList<>();
         for (int i = 0; i < storage.length; i++) {
-            if (storage[i] != null && storage[i].getStartDate().compareTo(startDate) >= 0 && storage[i].getEndDate().compareTo(endDate) <= 0 && Objects.equals(storage[i].getLocation().getCountryName(), countryName)) {
+            if (storage[i] != null && storage[i].getStartDate().compareTo(startDate) >= 0 && storage[i].getEndDate().compareTo(endDate) <= 0 && Objects.equals(locRepo.get(storage[i].getLocationId()).getCountryName(), countryName)) {
                 HashMap<String, String> obj = new HashMap<>();
                 obj.put("name", storage[i].getName());
                 obj.put("description", storage[i].getDescription());
+                res.add(obj);
                 break;
             }
         }
@@ -75,6 +76,8 @@ public class EventRepository implements GenericRepository<Event> {
     public void deleteAllEventsThatAlreadyTookPlace () {
         for (int i=0; i<storage.length; i++) {
             if (storage[i] != null && storage[i].getEndDate().compareTo(LocalDate.now()) < 0) {
+                System.out.println(storage[i].getEndDate());
+                System.out.println(LocalDate.now());
                 storage[i] = null;
             }
         }
@@ -82,8 +85,12 @@ public class EventRepository implements GenericRepository<Event> {
 
     public Integer getNumberOfEventsFromLocation(Integer locId) {
         Integer nr = 0;
+        System.out.println("loc id:" + locId);
         for (int i=0; i<storage.length; i++) {
-            if (storage[i].getLocation().getId() == locId) {
+            if (storage[i] != null) {
+                System.out.println("id: " + storage[i].getLocationId());
+            }
+            if (storage[i] != null && storage[i].getLocationId() == locId) {
                 nr += 1;
             }
         }

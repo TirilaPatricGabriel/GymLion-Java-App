@@ -5,6 +5,7 @@ import classes.Gym;
 import classes.Location;
 import exceptions.InvalidDataException;
 import repositories.EventRepository;
+import repositories.GymRepository;
 import repositories.LocationRepository;
 
 import java.util.ArrayList;
@@ -12,6 +13,10 @@ import java.util.ArrayList;
 public class LocationService {
 
     private LocationRepository locationRepo = new LocationRepository();
+
+    public LocationService(LocationRepository repo) {
+        this.locationRepo = repo;
+    }
 
     public void registerNewEntity(String countryName, String cityName, double latitude, double longitude) throws InvalidDataException {
         Location entity = new Location(countryName, cityName, latitude, longitude);

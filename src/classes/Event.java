@@ -8,23 +8,19 @@ public class Event {
     private LocalDate startDate, endDate;
     private String name, description;
     private Integer capacity;
-    private Location location;
+    private Integer locationId;
 
     public Event(){
         this.id = count.incrementAndGet();
     }
-    public Event(LocalDate startDate, LocalDate endDate, String name, String description, Integer capacity, Location location) {
+    public Event(LocalDate startDate, LocalDate endDate, String name, String description, Integer capacity, Integer locationId) {
         this.id = count.incrementAndGet();
-        Location newLocation = location;
         this.startDate = startDate;
         this.endDate = endDate;
         this.name = name;
         this.description = description;
         this.capacity = capacity;
-        this.location.setLatitude(newLocation.getLatitude());
-        this.location.setLongitude(newLocation.getLongitude());
-        this.location.setCountryName(newLocation.getCountryName());
-        this.location.setCityName(newLocation.getCityName());
+        this.locationId = locationId;
     }
 
     public int getId() {
@@ -38,8 +34,8 @@ public class Event {
         return this.endDate;
     }
 
-    public Location getLocation() {
-        return this.location;
+    public Integer getLocationId() {
+        return this.locationId;
     }
 
     public String getName() {
@@ -54,8 +50,8 @@ public class Event {
         return capacity;
     }
 
-    public void setLocation(Location location) {
-        this.location = location;
+    public void setLocation(Integer locationId) {
+        this.locationId = locationId;
     }
 
     public void setMyDate(LocalDate startDate) {

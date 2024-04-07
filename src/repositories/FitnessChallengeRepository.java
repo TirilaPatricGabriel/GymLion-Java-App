@@ -67,7 +67,7 @@ public class FitnessChallengeRepository implements GenericRepository<FitnessChal
 
     public void upgradeChallenge(CustomerRepository customerRepo, Integer numberOfCompletions, Integer points) {
         for (int i=0; i<storage.length; i++) {
-            if (getAllCustomersThatCompletedChallenge(customerRepo, storage[i].getName()).size() < numberOfCompletions) {
+            if (storage[i] != null && getAllCustomersThatCompletedChallenge(customerRepo, storage[i].getName()).size() < numberOfCompletions) {
                 storage[i].setPoints(storage[i].getPoints() + points);
             }
         }

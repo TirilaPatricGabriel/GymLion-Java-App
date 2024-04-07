@@ -1,7 +1,5 @@
 package classes;
 
-import java.time.LocalDate;
-
 public class GymMembership {
     private Integer gymId;
     private double price;

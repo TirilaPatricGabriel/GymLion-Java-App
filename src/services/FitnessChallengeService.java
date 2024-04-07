@@ -7,6 +7,7 @@ import classes.Location;
 import exceptions.InvalidDataException;
 import repositories.CustomerRepository;
 import repositories.FitnessChallengeRepository;
+import repositories.GymRepository;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -14,6 +15,11 @@ import java.util.ArrayList;
 public class FitnessChallengeService {
 
     private FitnessChallengeRepository challengesRepo = new FitnessChallengeRepository();
+
+
+    public FitnessChallengeService(FitnessChallengeRepository repo) {
+        this.challengesRepo = repo;
+    }
 
     public void registerNewEntity(String name, String description, Integer points) throws InvalidDataException {
         FitnessChallenge entity = new FitnessChallenge(name, description, points);

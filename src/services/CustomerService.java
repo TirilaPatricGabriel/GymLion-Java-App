@@ -5,6 +5,7 @@ import classes.Customer;
 import classes.FitnessChallenge;
 import exceptions.InvalidDataException;
 import repositories.CustomerRepository;
+import repositories.GymRepository;
 import repositories.OrderRepository;
 
 import java.util.ArrayList;
@@ -12,8 +13,11 @@ import java.util.ArrayList;
 public class CustomerService {
     private CustomerRepository customerRepo = new CustomerRepository();
 
-    public void registerNewEntity(String name, String email, String phone, String address, double balance, ArrayList<FitnessChallenge> challengesCompleted) throws InvalidDataException {
+    public CustomerService(CustomerRepository repo) {
+        this.customerRepo = repo;
+    }
 
+    public void registerNewEntity(String name, String email, String phone, String address, double balance, ArrayList<FitnessChallenge> challengesCompleted) throws InvalidDataException {
         if (name == null || name.trim().isEmpty()) {
             throw new InvalidDataException("Invalid name");
         }
@@ -69,10 +73,10 @@ public class CustomerService {
         return customerRepo.getCustomerWithMostOrders(orderRepo);
     }
 
-    public void rewardCustomerOfTheMonth (OrderRepository orderRepo, Integer reward) throws InvalidDataException {
+    public Integer rewardCustomerOfTheMonth (OrderRepository orderRepo, Integer reward) throws InvalidDataException {
         if (reward == null || reward <= 0) {
             throw new InvalidDataException("Reward must be higher than zero!");
         }
-        customerRepo.rewardCustomerOfTheMonth(orderRepo, reward);
+        return customerRepo.rewardCustomerOfTheMonth(orderRepo, reward);
     }
 }

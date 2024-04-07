@@ -10,7 +10,7 @@ import java.util.Arrays;
  * */
 public class AthleteRepository implements GenericRepository<Athlete> {
 
-    private Athlete[] storage = new Athlete[10];
+    private Athlete[] storage = new Athlete[100];
 
     @Override
     public void add(Athlete entity) {
@@ -56,7 +56,8 @@ public class AthleteRepository implements GenericRepository<Athlete> {
 
     public void deleteExpensiveAthletes (Integer percent) {
         for (int i=0; i<storage.length; i++) {
-            if (storage[i] != null && (storage[i].getSocialMediaFollowers() * (percent / 100)) < storage[i].getSalary()) {
+            if (storage[i] != null && (storage[i].getSocialMediaFollowers() * ((double) percent / 100)) < storage[i].getSalary()) {
+                System.out.println("percent: " + percent);
                 storage[i] = null;
             }
         }

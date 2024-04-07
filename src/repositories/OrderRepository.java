@@ -58,7 +58,7 @@ public class OrderRepository implements GenericRepository<Order> {
     public Integer getNumberOfOrdersOfCustomer(int customerId) {
         Integer number = 0;
         for (int i=0; i<storage.length; i++) {
-            if (storage[i].getCustomerId() == customerId) {
+            if (storage[i] != null && storage[i].getCustomerId() == customerId) {
                 number += 1;
             }
         }

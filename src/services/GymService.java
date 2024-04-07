@@ -15,8 +15,12 @@ public class GymService {
 
     private GymRepository gymRepo = new GymRepository();
 
-    public void registerNewEntity(String name, String description, Integer capacity, Location location) throws InvalidDataException {
-        Gym entity = new Gym(name, description, capacity, location);
+    public GymService(GymRepository gymRepository) {
+        this.gymRepo = gymRepository;
+    }
+
+    public void registerNewEntity(String name, String description, Integer capacity, Integer locationId) throws InvalidDataException {
+        Gym entity = new Gym(name, description, capacity, locationId);
         gymRepo.add(entity);
     }
 
@@ -43,14 +47,15 @@ public class GymService {
         gymRepo.delete(gym);
     }
 
-    public ArrayList<String> registerNewEntity(GymMembershipRepository membershipRepostiory, Integer startPrice, Integer endPrice) throws InvalidDataException {
+    public ArrayList<String> findGymsBasedOnMembershipPrices(Double startPrice, Double endPrice) throws InvalidDataException {
         if (startPrice == null || startPrice < 0) {
             throw new InvalidDataException("Invalid start price");
         }
         if (endPrice == null || endPrice < 0) {
             throw new InvalidDataException("Invalid end price");
         }
-        return gymRepo.findGymsBasedOnMembershipPrices(membershipRepostiory, startPrice, endPrice);
+        System.out.println("DEBUG1: " + startPrice + " " + endPrice);
+        return gymRepo.findGymsBasedOnMembershipPrices(startPrice, endPrice);
     }
 
     public void changeMembershipPrices (GymMembershipRepository membershipRepository, String gymName, Integer percent) throws InvalidDataException {

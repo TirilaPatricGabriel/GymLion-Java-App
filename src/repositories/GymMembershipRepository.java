@@ -56,7 +56,7 @@ public class GymMembershipRepository implements GenericRepository<GymMembership>
         return storage.length;
     }
 
-    static public ArrayList<Integer> getGymIdsOfMembershipsWithPricesWithinALimit (Integer startPrice, Integer endPrice) {
+    static public ArrayList<Integer> getGymIdsOfMembershipsWithPricesWithinALimit (Double startPrice, Double endPrice) {
         ArrayList<Integer> ids = new ArrayList<>();
         for (int i = 0; i < storage.length; i++) {
             if (storage[i] != null) {
@@ -73,7 +73,9 @@ public class GymMembershipRepository implements GenericRepository<GymMembership>
     public void changeMembershipPricesOfSelectGym (Integer gymId, Integer percent) {
         for (int i=0; i<storage.length; i++) {
             if (storage[i] != null && Objects.equals(storage[i].getGymId(), gymId)) {
-                storage[i].setPrice(storage[i].getPrice() + (percent * storage[i].getPrice()));
+                System.out.println(storage[i].getPrice());
+                storage[i].setPrice(storage[i].getPrice() + ((double) percent / 100 * storage[i].getPrice()));
+                System.out.println(storage[i].getPrice());
             }
         }
     }

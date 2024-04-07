@@ -3,6 +3,7 @@ package services;
 import repositories.AthleteRepository;
 import classes.Athlete;
 import exceptions.InvalidDataException;
+import repositories.GymRepository;
 
 
 import java.util.ArrayList;
@@ -11,6 +12,10 @@ import java.util.List;
 public class AthleteService {
 
     private AthleteRepository athleteRepository = new AthleteRepository();
+
+    public AthleteService(AthleteRepository repo) {
+        this.athleteRepository = repo;
+    }
 
     public void registerNewEntity(String name, String email, String phone, String address, double salary, int socialMediaFollowers, double bonusPerTenThousandLikes) throws InvalidDataException {
 
