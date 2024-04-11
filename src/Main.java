@@ -35,24 +35,17 @@ public class Main {
     private static  LocationService locationService = new LocationService(locationRepository);
     private static  PersonService personService = new PersonService(personRepository);
 
-    public static void addDataToRepositories () {
-        Location loc1 = new Location("Romania", "Campina", 39.5, 24.3),
-                loc2 = new Location("USA", "LA", 344.4, 255.5),
-                loc3 = new Location("USA", "NY", 2550, 254),
-                loc4 = new Location("Spain", "Madrid", 15.5, 255.5),
-                loc5 = new Location("Spain", "Barcelona", 10.4, 300.3);
-        System.out.println("WJHRIOFWJFOAWPFIAW");
-        locationRepository.add(loc1);
-        locationRepository.add(loc2);
-        locationRepository.add(loc3);
-        locationRepository.add(loc4);
-        locationRepository.add(loc5);
-        Gym gym1 = new Gym("name1", "desc1", 30, 1),
-                gym2 = new Gym("name2", "desc2", 54, 2),
-                gym3 = new Gym("name3", "desc3", 22, 3);
-        gymRepository.add(gym1);
-        gymRepository.add(gym2);
-        gymRepository.add(gym3);
+    public static void addDataToRepositories () throws InvalidDataException {
+        locationService.registerNewEntity("Romania", "Campina", 39.5, 24.3);
+        locationService.registerNewEntity("USA", "LA", 344.4, 255.5);
+        locationService.registerNewEntity("USA", "NY", 2550, 254);
+        locationService.registerNewEntity("Spain", "Madrid", 15.5, 255.5);
+        locationService.registerNewEntity("Spain", "Barcelona", 10.4, 300.3);
+
+        gymService.registerNewEntity("name1", "desc1", 30, 1);
+        gymService.registerNewEntity("name2", "desc2", 54, 2);
+        gymService.registerNewEntity("name3", "desc3", 22, 3);
+
         GymMembership membership1 = new GymMembership(1, 344.4, 12, "H2roEQ"),
                 membership2 = new GymMembership(2, 355.5, 6, "QPWRO"),
                 membership3 = new GymMembership(3, 2500, 12, "vwoWowv");
@@ -60,12 +53,9 @@ public class Main {
         membershipRepository.add(membership2);
         membershipRepository.add(membership3);
 
-        Event ev1 = new Event(LocalDate.of(2022, 12, 1), LocalDate.of(2022, 12, 31), "ev1", "desc1", 30000, 1),
-                ev2 = new Event(LocalDate.of(2020, 2, 1), LocalDate.of(2022, 3, 1), "ev2", "desc2", 30000, 2),
-                ev5 = new Event(LocalDate.of(2022, 12, 1), LocalDate.now(), "ev5", "desc5 ", 100000, 2);
-        eventRepository.add(ev1);
-        eventRepository.add(ev2);
-        eventRepository.add(ev5);
+        eventService.registerNewEntity(LocalDate.of(2022, 12, 1), LocalDate.of(2022, 12, 31), "ev1", "desc1", 30000, 1);
+        eventService.registerNewEntity(LocalDate.of(2020, 2, 1), LocalDate.of(2022, 3, 1), "ev2", "desc2", 30000, 2);
+        eventService.registerNewEntity(LocalDate.of(2022, 12, 1), LocalDate.now(), "ev5", "desc5 ", 100000, 2);
 
         FitnessChallenge ch1 = new FitnessChallenge("ch1", "desc1", 30),
                 ch2 = new FitnessChallenge("ch2", "desc2", 100),
@@ -73,28 +63,34 @@ public class Main {
         challengeRepository.add(ch1);
         challengeRepository.add(ch2);
         challengeRepository.add(ch3);
+//        challengeService.registerNewEntity("ch1", "desc1", 30);
+//        challengeService.registerNewEntity("ch2", "desc2", 100);
+//        challengeService.registerNewEntity("ch3", "desc3", 23);
+
         ArrayList<FitnessChallenge> chArr1 = new ArrayList<>(), chArr2 = new ArrayList<>();
         chArr1.add(ch1); chArr2.add(ch2); chArr1.add(ch2);
         Customer customer1 = new Customer("c1", "e1", "p1", "a1", 20, 39.9, chArr1);
         Customer customer2 = new Customer("c2", "e2", "p2", "a2", 25, 400, chArr2);
-        customerRepository.add(customer1);
-        customerRepository.add(customer2);
+        customerService.registerNewEntity("c1", "e1", "p1", "a1", 20, 39.9, chArr1);
+        customerService.registerNewEntity("c2", "e2", "p2", "a2", 25, 400, chArr2);
         ArrayList<String> codes = new ArrayList<>();
         codes.add("QPWRO"); codes.add("vwoWowv");
         Order o1 = new Order(2, LocalDate.now(), codes, 399.9),
               o2 = new Order(2, LocalDate.now(), codes, 399.9);
-        orderRepository.add(o1);
-        customerRepository.add(customer1); customerRepository.add(customer2);
+        orderRepository.add(o1); orderRepository.add(o2);
 
         Athlete ath1 = new Athlete("n1", "e1", "p1", "a1", 20, 5, 1000, 2000),
-                ath2 = new Athlete("n2", "e2", "p2", "a2", 32, 5000000, 1000, 2000);
-        athleteRepository.add(ath1);
-        athleteRepository.add(ath2);
+                ath2 = new Athlete("n2", "e2", "p2", "a2", 32, 5000000, 1000, 2000),
+                ath3 = new Athlete("n3", "e3", "p3", "a3", 55, 5000000, 500000, 2000);
+        athleteService.registerNewEntity("n1", "e1", "p1", "a1", 20, 5, 1000, 2000);
+        athleteService.registerNewEntity("n2", "e2", "p2", "a2", 32, 5000000, 1000, 2000);
+        athleteService.registerNewEntity("n3", "e3", "p3", "a3", 55, 5000000, 500000, 2000);
 
         personRepository.add(ath1);
         personRepository.add(customer1);
         personRepository.add(ath2);
         personRepository.add(customer2);
+        personRepository.add(ath3);
     }
     public static void main(String[] args) throws InvalidDataException {
         addDataToRepositories();
@@ -108,13 +104,13 @@ public class Main {
 
             switch (modelChoice.toLowerCase()) {
                 case "athlete":
-//                    handleAthleteCRUD();
+                    handleAthleteCRUD();
                     break;
                 case "customer":
-//                    handleCustomerCRUD();
+                    handleCustomerCRUD();
                     break;
                 case "event":
-//                    handleEventCRUD();
+                    handleEventCRUD();
                     break;
                 case "challenge":
 //                    handleChallengeCRUD();
@@ -123,7 +119,7 @@ public class Main {
                     handleGymCRUD();
                     break;
                 case "location":
-//                    handleLocationCRUD();
+                    handleLocationCRUD();
                     break;
                 default:
                     System.out.println("Invalid model choice. Please select a valid model.");
@@ -237,12 +233,8 @@ public class Main {
                     System.out.println("Challenge name:");
                     String challengeName = scanner.nextLine();
                     ArrayList<Integer> ids = challengeService.getAllCustomersThatCompletedChallenge(customerRepository, challengeName);
-                    ArrayList<Integer> used = new ArrayList<>();
                     for (int i=0; i<ids.size(); i++) {
-                        if (!used.contains(ids.get(i))) {
-                            used.add(ids.get(i));
-                            System.out.println(ids.get(i));
-                        }
+                        System.out.println(ids.get(i));
                     }
                     break;
                 case "10":
@@ -280,79 +272,126 @@ public class Main {
     }
 
     // CRUD methods for each model
-//    private static void handleAthleteCRUD() throws InvalidDataException {
-//        System.out.println("You chose Athlete. Select CRUD operation: create, read, or delete");
-//        String crudOperation = scanner.nextLine();
-//
-//        switch (crudOperation.toLowerCase()) {
-//            case "create":
-//                System.out.println("Name:");
-//                String name = scanner.nextLine();
-//                System.out.println("Email:");
-//                String email = scanner.nextLine();
-//                System.out.println("Phone:");
-//                String phone = scanner.nextLine();
-//                System.out.println("Address:");
-//                String address = scanner.nextLine();
-//                System.out.println("Salary:");
-//                double salary= Double.parseDouble(scanner.nextLine());
-//                System.out.println("Followers:");
-//                Integer followers = Integer.parseInt(scanner.nextLine());
-//                System.out.println("Bonus:");
-//                Integer bonusPerTenThousandLikes = Integer.parseInt(scanner.nextLine());
-//                athleteService.registerNewEntity(name, email, phone, address, salary, followers, bonusPerTenThousandLikes);
-//                break;
-//            case "read":
-//                System.out.println("Index:");
-//                Integer index = Integer.parseInt(scanner.nextLine());
-//                athleteService.get(index);
-//                break;
-//            case "delete":
-//                deleteAthlete();
-//                break;
-//            default:
-//                System.out.println("Invalid CRUD operation. Please choose create, read, or delete.");
-//        }
-//    }
-//
-//    private static void handleCustomerCRUD() {
-//        System.out.println("You chose Customer. Select CRUD operation: create, read, or delete");
-//        String crudOperation = scanner.nextLine();
-//
-//        switch (crudOperation.toLowerCase()) {
-//            case "create":
-//                createCustomer();
-//                break;
-//            case "read":
-//                readCustomer();
-//                break;
-//            case "delete":
-//                deleteCustomer();
-//                break;
-//            default:
-//                System.out.println("Invalid CRUD operation. Please choose create, read, or delete.");
-//        }
-//    }
-//
-//    private static void handleEventCRUD() {
-//        System.out.println("You chose Customer. Select CRUD operation: create, read, or delete");
-//        String crudOperation = scanner.nextLine();
-//
-//        switch (crudOperation.toLowerCase()) {
-//            case "create":
-//                createCustomer();
-//                break;
-//            case "read":
-//                readCustomer();
-//                break;
-//            case "delete":
-//                deleteCustomer();
-//                break;
-//            default:
-//                System.out.println("Invalid CRUD operation. Please choose create, read, or delete.");
-//        }
-//    }
-//
+    private static void handleAthleteCRUD() throws InvalidDataException {
+        System.out.println("You chose Athlete. Select CRUD operation: create, read, or delete");
+        String crudOperation = scanner.nextLine();
+        Integer index;
+
+        switch (crudOperation.toLowerCase()) {
+            case "create":
+                System.out.println("Name:");
+                String name = scanner.nextLine();
+                System.out.println("Email:");
+                String email = scanner.nextLine();
+                System.out.println("Phone:");
+                String phone = scanner.nextLine();
+                System.out.println("Address:");
+                String address = scanner.nextLine();
+                System.out.println("Age:");
+                Integer age= Integer.parseInt(scanner.nextLine());
+                System.out.println("Salary:");
+                double salary= Double.parseDouble(scanner.nextLine());
+                System.out.println("Followers:");
+                Integer followers = Integer.parseInt(scanner.nextLine());
+                System.out.println("Bonus:");
+                Integer bonusPerTenThousandLikes = Integer.parseInt(scanner.nextLine());
+                athleteService.registerNewEntity(name, email, phone, address, age, salary, followers, bonusPerTenThousandLikes);
+                break;
+            case "read":
+                System.out.println("Index:");
+                index = Integer.parseInt(scanner.nextLine());
+                athleteService.get(index);
+                break;
+            case "delete":
+                System.out.println("Index:");
+                index = Integer.parseInt(scanner.nextLine());
+                athleteService.delete(index);
+                break;
+            default:
+                System.out.println("Invalid CRUD operation. Please choose create, read, or delete.");
+        }
+    }
+
+    private static void handleCustomerCRUD() throws InvalidDataException {
+        System.out.println("You chose Customer. Select CRUD operation: create, read, or delete");
+        String crudOperation = scanner.nextLine();
+        Integer index;
+
+        switch (crudOperation.toLowerCase()) {
+            case "create":
+                System.out.println("Name:");
+                String name = scanner.nextLine();
+                System.out.println("Email:");
+                String email = scanner.nextLine();
+                System.out.println("Phone:");
+                String phone = scanner.nextLine();
+                System.out.println("Address:");
+                String address = scanner.nextLine();
+                System.out.println("Age:");
+                Integer age= Integer.parseInt(scanner.nextLine());
+                System.out.println("Balance:");
+                double balance= Double.parseDouble(scanner.nextLine());
+
+                ArrayList<FitnessChallenge> challengesCompleted = new ArrayList<>();
+
+                customerService.registerNewEntity(name, email, phone, address, age, balance, challengesCompleted);
+                break;
+            case "read":
+                System.out.println("Index:");
+                index = Integer.parseInt(scanner.nextLine());
+                customerService.get(index);
+                break;
+            case "delete":
+                System.out.println("Index:");
+                index = Integer.parseInt(scanner.nextLine());
+                customerService.delete(index);
+                break;
+            default:
+                System.out.println("Invalid CRUD operation. Please choose create, read, or delete.");
+        }
+    }
+
+    private static void handleEventCRUD() throws InvalidDataException {
+        System.out.println("You chose Customer. Select CRUD operation: create, read, or delete");
+        String crudOperation = scanner.nextLine();
+        Integer index;
+
+        switch (crudOperation.toLowerCase()) {
+            case "create":
+                System.out.println("Name:");
+                String name = scanner.nextLine();
+                System.out.println("Description:");
+                String description = scanner.nextLine();
+                System.out.println("Start date (day, month, year):");
+                Integer sDay = Integer.parseInt(scanner.nextLine());
+                Integer sMonth = Integer.parseInt(scanner.nextLine());
+                Integer sYear = Integer.parseInt(scanner.nextLine());
+                System.out.println("End date (day, month, year):");
+                Integer eDay = Integer.parseInt(scanner.nextLine());
+                Integer eMonth = Integer.parseInt(scanner.nextLine());
+                Integer eYear = Integer.parseInt(scanner.nextLine());
+                System.out.println("Capacity:");
+                Integer capacity = Integer.parseInt(scanner.nextLine());
+                System.out.println("Location's id:");
+                Integer locationId = Integer.parseInt(scanner.nextLine());
+                eventService.registerNewEntity(LocalDate.of(sYear, sMonth, sDay),
+                        LocalDate.of(eYear, eMonth, eDay), name, description, capacity, locationId);
+                break;
+            case "read":
+                System.out.println("Index:");
+                index = Integer.parseInt(scanner.nextLine());
+                eventService.get(index);
+                break;
+            case "delete":
+                System.out.println("Index:");
+                index = Integer.parseInt(scanner.nextLine());
+                eventService.delete(index);
+                break;
+            default:
+                System.out.println("Invalid CRUD operation. Please choose create, read, or delete.");
+        }
+    }
+
 //    private static void handleChallengeCRUD() {
 //        System.out.println("You chose Customer. Select CRUD operation: create, read, or delete");
 //        String crudOperation = scanner.nextLine();
@@ -371,7 +410,7 @@ public class Main {
 //                System.out.println("Invalid CRUD operation. Please choose create, read, or delete.");
 //        }
 //    }
-//
+
     private static void handleGymCRUD() throws InvalidDataException {
         System.out.println("You chose Gym. Select CRUD operation: create, read, or delete");
         String crudOperation = scanner.nextLine();

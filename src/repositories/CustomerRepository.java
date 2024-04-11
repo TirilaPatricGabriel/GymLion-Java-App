@@ -93,7 +93,6 @@ public class CustomerRepository implements GenericRepository<Customer> {
         System.out.println("CUSTOMER OF THE MONTH ID:" + customerId);
         for (int i=0; i<storage.length; i++) {
             if (storage[i] != null && storage[i].getId() == customerId) {
-                System.out.println("FOUND HIM!");
                 storage[i].setBalance(storage[i].getBalance() + reward);
                 break;
             }

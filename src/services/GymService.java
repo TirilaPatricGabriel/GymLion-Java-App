@@ -54,7 +54,6 @@ public class GymService {
         if (endPrice == null || endPrice < 0) {
             throw new InvalidDataException("Invalid end price");
         }
-        System.out.println("DEBUG1: " + startPrice + " " + endPrice);
         return gymRepo.findGymsBasedOnMembershipPrices(startPrice, endPrice);
     }
 

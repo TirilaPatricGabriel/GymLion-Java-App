@@ -50,7 +50,6 @@ public class GymRepository implements GenericRepository<Gym> {
     }
 
     public void changeMembershipPrices (GymMembershipRepository membershipRepository, String gymName, Integer percent) {
-        System.out.println("DEBUG: " + gymName + " " + percent);
         for (int i=0; i<storage.length; i++) {
             if (storage[i] != null && storage[i].getName().equals(gymName)) {
                 membershipRepository.changeMembershipPricesOfSelectGym(storage[i].getId(), percent);

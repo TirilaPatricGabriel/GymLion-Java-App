@@ -35,7 +35,6 @@ public class Customer extends Person {
     }
 
     public void setBalance(double balance) {
-        System.out.println("BALANCE NEW:" + balance);
         this.balance = balance;
     }
     public void addChallengeToCompleted (FitnessChallenge challenge) {

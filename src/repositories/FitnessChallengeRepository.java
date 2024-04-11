@@ -56,6 +56,7 @@ public class FitnessChallengeRepository implements GenericRepository<FitnessChal
     }
 
     public ArrayList<Integer> getAllCustomersThatCompletedChallenge (CustomerRepository customerRepo, String challengeName) {
+        System.out.println(challengeName);
         int challengeId = -1;
         for (int i=0; i<storage.length; i++) {
             if (storage[i] != null && storage[i].getName().equals(challengeName)) {
