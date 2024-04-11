@@ -4,8 +4,8 @@ public class Athlete extends Person {
     private double salary, bonusPerTenThousandLikes;
     private int socialMediaFollowers;
 
-    public Athlete(String name, String email, String phone, String address, double salary, int socialMediaFollowers, double bonusPerTenThousandLikes) {
-        super(name, email, phone, address);
+    public Athlete(String name, String email, String phone, String address, int age, double salary, int socialMediaFollowers, double bonusPerTenThousandLikes) {
+        super(name, email, phone, address, age);
         this.salary = salary;
         this.socialMediaFollowers = socialMediaFollowers;
         this.bonusPerTenThousandLikes = bonusPerTenThousandLikes;
@@ -48,5 +48,16 @@ public class Athlete extends Person {
 
     public void setBonusPerTenThousandLikes(double bonusPerTenThousandLikes) {
         this.bonusPerTenThousandLikes = bonusPerTenThousandLikes;
+    }
+
+    @Override
+    public String toString() {
+        return "Athlete{" +
+                "name='" + getName() + '\'' +
+                ", age=" + getAge() +
+                ", salary=" + salary +
+                ", socialMediaFollowers=" + socialMediaFollowers +
+                ", bonusPerTenThousandLikes=" + bonusPerTenThousandLikes +
+                '}';
     }
 }

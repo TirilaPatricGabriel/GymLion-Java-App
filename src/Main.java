@@ -23,6 +23,7 @@ public class Main {
     private static GymRepository gymRepository = new GymRepository();
     private static LocationRepository locationRepository = new LocationRepository();
     private static FitnessChallengeRepository challengeRepository = new FitnessChallengeRepository();
+    private static PersonRepository personRepository = new PersonRepository();
 
 
 
@@ -32,6 +33,7 @@ public class Main {
     private static FitnessChallengeService challengeService = new FitnessChallengeService(challengeRepository);
     private static GymService gymService = new GymService(gymRepository);
     private static  LocationService locationService = new LocationService(locationRepository);
+    private static  PersonService personService = new PersonService(personRepository);
 
     public static void addDataToRepositories () {
         Location loc1 = new Location("Romania", "Campina", 39.5, 24.3),
@@ -73,8 +75,8 @@ public class Main {
         challengeRepository.add(ch3);
         ArrayList<FitnessChallenge> chArr1 = new ArrayList<>(), chArr2 = new ArrayList<>();
         chArr1.add(ch1); chArr2.add(ch2); chArr1.add(ch2);
-        Customer customer1 = new Customer("c1", "e1", "p1", "a1", 39.9, chArr1);
-        Customer customer2 = new Customer("c2", "e2", "p2", "a2", 400, chArr2);
+        Customer customer1 = new Customer("c1", "e1", "p1", "a1", 20, 39.9, chArr1);
+        Customer customer2 = new Customer("c2", "e2", "p2", "a2", 25, 400, chArr2);
         customerRepository.add(customer1);
         customerRepository.add(customer2);
         ArrayList<String> codes = new ArrayList<>();
@@ -84,10 +86,15 @@ public class Main {
         orderRepository.add(o1);
         customerRepository.add(customer1); customerRepository.add(customer2);
 
-        Athlete ath1 = new Athlete("n1", "e1", "p1", "a1", 5, 1000, 2000),
-                ath2 = new Athlete("n2", "e2", "p2", "a2", 5000000, 1000, 2000);
+        Athlete ath1 = new Athlete("n1", "e1", "p1", "a1", 20, 5, 1000, 2000),
+                ath2 = new Athlete("n2", "e2", "p2", "a2", 32, 5000000, 1000, 2000);
         athleteRepository.add(ath1);
         athleteRepository.add(ath2);
+
+        personRepository.add(ath1);
+        personRepository.add(customer1);
+        personRepository.add(ath2);
+        personRepository.add(customer2);
     }
     public static void main(String[] args) throws InvalidDataException {
         addDataToRepositories();
@@ -136,6 +143,9 @@ public class Main {
             System.out.println("8. Get all events that took place in a period of time in a city selected");
             System.out.println("9. Find all users that completed a challenge");
             System.out.println("10. Upgrade points of a challenge that was completed less than a number n of times");
+            System.out.println("11. Show customers with balance over threshold");
+            System.out.println("12. Increase salary of popular athletes");
+            System.out.println("13. Show people sorted by age");
 
             String crudOperation = scanner.nextLine();
 
@@ -248,6 +258,20 @@ public class Main {
                         }
                     }
                     System.out.println("Challenges upgraded successfully!");
+                    break;
+                case "11":
+                    System.out.println("Threshold:");
+                    double threshold = Double.parseDouble(scanner.nextLine());
+
+                    personService.showCustomersWithBalanceOverThreshold(threshold);
+
+                    break;
+                case "12":
+                    personService.increaseSalaryOfPopularAthletes();
+
+                    break;
+                case "13":
+                    personService.showPeopleSortedByAge();
                     break;
                 default:
                     System.out.println("Invalid CRUD operation. Please choose create, read, or delete.");

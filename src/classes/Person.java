@@ -1,18 +1,20 @@
 package classes;
 
 import java.util.concurrent.atomic.AtomicInteger;
-public class Person {
+public class Person implements Comparable<Person>{
     private static final AtomicInteger count = new AtomicInteger(0);
     private final int id;
     private String name, email, phone, address;
+    private int age;
 
 
-    public Person(String name, String email, String phone, String address) {
+    public Person(String name, String email, String phone, String address, int age) {
         this.id = count.incrementAndGet();
         this.name = name;
         this.email = email;
         this.phone = phone;
         this.address = address;
+        this.age = age;
     }
 
     public void displayInfo() {
@@ -22,10 +24,20 @@ public class Person {
         System.out.println("Address: " + this.address);
     }
 
+    @Override
+    public int compareTo(Person other) {
+        return Integer.compare(this.age, other.getAge());
+    }
+
     // Getters
     public int getId() {
         return this.id;
     }
+
+    public int getAge() {
+        return age;
+    }
+
     public String getName () {
         return this.name;
     }

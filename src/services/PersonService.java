@@ -1,20 +1,16 @@
 package services;
 
-import repositories.AthleteRepository;
 import classes.Athlete;
+import classes.Customer;
+import repositories.PersonRepository;
+import classes.Person;
 import exceptions.InvalidDataException;
-import repositories.GymRepository;
 
+public class PersonService {
+    private PersonRepository personRepository = new PersonRepository();
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class AthleteService {
-
-    private AthleteRepository athleteRepository = new AthleteRepository();
-
-    public AthleteService(AthleteRepository repo) {
-        this.athleteRepository = repo;
+    public PersonService(PersonRepository repo) {
+        this.personRepository = repo;
     }
 
     public void registerNewEntity(String name, String email, String phone, String address, int age, double salary, int socialMediaFollowers, double bonusPerTenThousandLikes) throws InvalidDataException {
@@ -35,7 +31,7 @@ public class AthleteService {
             throw new InvalidDataException("Invalid address");
         }
 
-        if (age < 18) {
+        if (salary < 18) {
             throw new InvalidDataException("Invalid age");
         }
 
@@ -51,37 +47,46 @@ public class AthleteService {
             throw new InvalidDataException("Invalid bonus");
         }
 
-        Athlete entity = new Athlete(name, email, phone, address, age, salary, socialMediaFollowers, bonusPerTenThousandLikes);
-        athleteRepository.add(entity);
+        Person entity = new Person(name, email, phone, address, age);
+        personRepository.add(entity);
     }
 
-    public Athlete get(int index) throws InvalidDataException {
+    public Person get(int index) throws InvalidDataException {
         if (index < 0) {
             throw new InvalidDataException("Index can't be lower than 0");
         }
-        return athleteRepository.get(index);
+        return personRepository.get(index);
     }
 
     public void update(int index) throws InvalidDataException {
         if (index < 0) {
             throw new InvalidDataException("Index can't be lower than 0");
         }
-        Athlete atl = athleteRepository.get(index);
-        athleteRepository.update(atl);
+        Person pers = personRepository.get(index);
+        personRepository.update(pers);
     }
 
     public void delete(int index) throws InvalidDataException {
         if (index < 0) {
             throw new InvalidDataException("Index can't be lower than 0");
         }
-        Athlete atl = athleteRepository.get(index);
-        athleteRepository.delete(atl);
+        Person pers = personRepository.get(index);
+        personRepository.delete(pers);
     }
 
-    public void deleteExpensiveAthletes (Integer percent) throws InvalidDataException {
-        if (percent <= 0) {
-            throw new InvalidDataException("Invalid dates");
+    public void showCustomersWithBalanceOverThreshold(double threshold) throws InvalidDataException {
+        if (threshold < 0){
+            throw new InvalidDataException("Threshold can't be lower than 0");
         }
-        athleteRepository.deleteExpensiveAthletes(percent);
+
+        personRepository.showCustomersWithBalanceOverThreshold(threshold);
+    }
+
+    public void increaseSalaryOfPopularAthletes() {
+        personRepository.increaseSalaryOfPopularAthletes();
+    }
+
+    public void showPeopleSortedByAge(){
+        personRepository.showPeopleSortedByAge();
     }
 }

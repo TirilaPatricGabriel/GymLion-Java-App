@@ -17,7 +17,7 @@ public class CustomerService {
         this.customerRepo = repo;
     }
 
-    public void registerNewEntity(String name, String email, String phone, String address, double balance, ArrayList<FitnessChallenge> challengesCompleted) throws InvalidDataException {
+    public void registerNewEntity(String name, String email, String phone, String address, int age, double balance, ArrayList<FitnessChallenge> challengesCompleted) throws InvalidDataException {
         if (name == null || name.trim().isEmpty()) {
             throw new InvalidDataException("Invalid name");
         }
@@ -34,6 +34,10 @@ public class CustomerService {
             throw new InvalidDataException("Invalid address");
         }
 
+        if (age < 18) {
+            throw new InvalidDataException("Invalid age");
+        }
+
         if (balance < 0) {
             throw new InvalidDataException("Invalid balance");
         }
@@ -42,7 +46,7 @@ public class CustomerService {
             throw new InvalidDataException("Invalid challenges");
         }
 
-        Customer entity = new Customer(name, email, phone, address, balance, challengesCompleted);
+        Customer entity = new Customer(name, email, phone, address, age, balance, challengesCompleted);
         customerRepo.add(entity);
     }
 

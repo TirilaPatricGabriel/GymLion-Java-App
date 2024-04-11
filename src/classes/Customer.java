@@ -6,8 +6,8 @@ public class Customer extends Person {
     private ArrayList<FitnessChallenge> challengesCompleted = new ArrayList<>();
 
     // Constructor
-    public Customer(String name, String email, String phone, String address, double balance, ArrayList<FitnessChallenge> challengesCompleted) {
-        super(name, email, phone, address);
+    public Customer(String name, String email, String phone, String address, int age, double balance, ArrayList<FitnessChallenge> challengesCompleted) {
+        super(name, email, phone, address, age);
         this.balance = balance;
         this.challengesCompleted.addAll(challengesCompleted);
     }
@@ -41,5 +41,15 @@ public class Customer extends Person {
     public void addChallengeToCompleted (FitnessChallenge challenge) {
         FitnessChallenge newChallenge = challenge;
         this.challengesCompleted.add(newChallenge);
+    }
+
+    @Override
+    public String toString() {
+        return "Customer{" +
+                "name='" + getName() + '\'' +
+                ", age=" + getAge() +
+                ", balance=" + balance +
+                ", challengesCompleted=" + challengesCompleted.size() +
+                '}';
     }
 }
