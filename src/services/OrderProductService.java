@@ -10,8 +10,8 @@ public class OrderProductService {
 
     private OrderProductRepository orderProductRepository;
 
-    public OrderProductService(OrderProductRepository orderProductRepository) {
-        this.orderProductRepository = orderProductRepository;
+    public OrderProductService(OrderProductRepository repo) {
+        this.orderProductRepository = repo;
     }
 
     public void addOrderProduct(int orderId, int productId) throws SQLException {

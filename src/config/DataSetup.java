@@ -151,6 +151,13 @@ public class DataSetup {
                 "INSERT INTO order_products(orderId, productId) VALUES (orderId, productId); " +
                 "END";
 
+        String deleteProcedureLocation = "DROP PROCEDURE IF EXISTS INSERT_LOCATION;";
+        String createStoredProcedureLocation = "CREATE PROCEDURE INSERT_LOCATION(OUT locationId INT, IN countryName VARCHAR(50), IN cityName VARCHAR(50), IN latitude DOUBLE, IN longitude DOUBLE) " +
+                "BEGIN " +
+                "INSERT INTO locations(countryName, cityName, latitude, longitude) VALUES (countryName, cityName, latitude, longitude); " +
+                "SET locationId = LAST_INSERT_ID(); " +
+                "END";
+
         stmt.execute(deleteProcedurePersons);
         stmt.execute(createStoredProcedurePersons);
 
@@ -174,6 +181,9 @@ public class DataSetup {
 
         stmt.execute(deleteProcedureOrderProduct);
         stmt.execute(createStoredProcedureOrderProduct);
+
+        stmt.execute(deleteProcedureLocation);
+        stmt.execute(createStoredProcedureLocation);
 
         stmt.close();
         databaseConnection.close();

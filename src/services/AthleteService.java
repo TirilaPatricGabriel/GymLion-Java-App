@@ -55,33 +55,67 @@ public class AthleteService {
         athleteRepository.add(entity);
     }
 
-    public Athlete get(int index) throws InvalidDataException {
-        if (index < 0) {
+    public Athlete get(int id) throws InvalidDataException {
+        if (id < 0) {
             throw new InvalidDataException("Index can't be lower than 0");
         }
-        return athleteRepository.get(index);
+        return athleteRepository.get(id);
     }
 
-    public void update(int index) throws InvalidDataException {
-        if (index < 0) {
+    public void update(int id) throws InvalidDataException {
+        if (id < 0) {
             throw new InvalidDataException("Index can't be lower than 0");
         }
-        Athlete atl = athleteRepository.get(index);
+        Athlete atl = athleteRepository.get(id);
         athleteRepository.update(atl);
     }
 
-    public void delete(int index) throws InvalidDataException {
-        if (index < 0) {
+    public void delete(int id) throws InvalidDataException {
+        if (id < 0) {
             throw new InvalidDataException("Index can't be lower than 0");
         }
-        Athlete atl = athleteRepository.get(index);
+        Athlete atl = athleteRepository.get(id);
         athleteRepository.delete(atl);
     }
 
-    public void deleteExpensiveAthletes (Integer percent) throws InvalidDataException {
-        if (percent <= 0) {
-            throw new InvalidDataException("Invalid dates");
+    public void deleteExpensiveAthletes(int percentage) {
+        List<Athlete> expensiveAthletes = athleteRepository.getExpensiveAthletes(percentage);
+        for (Athlete athlete : expensiveAthletes) {
+            Athlete atl = athleteRepository.get(athlete.getId());
+            athleteRepository.delete(atl);
         }
-        athleteRepository.deleteExpensiveAthletes(percent);
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//    public void deleteExpensiveAthletes (Integer percent) throws InvalidDataException {
+//        if (percent <= 0) {
+//            throw new InvalidDataException("Invalid dates");
+//        }
+//        athleteRepository.deleteExpensiveAthletes(percent);
+//    }
 }

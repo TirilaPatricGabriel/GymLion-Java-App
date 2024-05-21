@@ -60,4 +60,8 @@ public class Athlete extends Person {
                 ", bonusPerTenThousandLikes=" + bonusPerTenThousandLikes +
                 '}';
     }
+
+    public void setId(int athleteId) {
+        super.setId(athleteId);
+    }
 }

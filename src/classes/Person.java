@@ -3,7 +3,7 @@ package classes;
 import java.util.concurrent.atomic.AtomicInteger;
 public class Person implements Comparable<Person>{
     private static final AtomicInteger count = new AtomicInteger(0);
-    private final int id;
+    private int id;
     private String name, email, phone, address;
     private int age;
 
@@ -69,6 +69,10 @@ public class Person implements Comparable<Person>{
 
     public void setAddress (String name) {
         this.name = name;
+    }
+
+    protected void setId(int id) {
+        this.id = id;
     }
 }
 

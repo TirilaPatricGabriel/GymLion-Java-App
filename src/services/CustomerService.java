@@ -46,26 +46,26 @@ public class CustomerService {
         customerRepo.add(entity);
     }
 
-    public Customer get(int index) throws InvalidDataException {
-        if (index < 0) {
+    public Customer get(int id) throws InvalidDataException {
+        if (id < 0) {
             throw new InvalidDataException("Index can't be lower than 0");
         }
-        return customerRepo.get(index);
+        return customerRepo.get(id);
     }
 
-    public void update(int index) throws InvalidDataException {
-        if (index < 0) {
+    public void update(int id) throws InvalidDataException {
+        if (id < 0) {
             throw new InvalidDataException("Index can't be lower than 0");
         }
-        Customer customer = customerRepo.get(index);
+        Customer customer = customerRepo.get(id);
         customerRepo.update(customer);
     }
 
-    public void delete(int index) throws InvalidDataException {
-        if (index < 0) {
+    public void delete(int id) throws InvalidDataException {
+        if (id < 0) {
             throw new InvalidDataException("Index can't be lower than 0");
         }
-        Customer atl = customerRepo.get(index);
+        Customer atl = customerRepo.get(id);
         customerRepo.delete(atl);
     }
 
