@@ -75,18 +75,18 @@ public class CustomerRepository implements GenericRepository<Customer> {
         return customerId;
     }
 
-    public ArrayList<Integer> getAllCustomersThatCompletedChallenge(int challengeId) {
-        ArrayList<Integer> customerIds = new ArrayList<>();
-        for (int i=0; i<storage.length; i++) {
-            if (storage[i] != null) {
-                ArrayList<Integer> challengeIds = storage[i].getChallengesCompletedIds();
-                if (challengeIds.contains(challengeId)) {
-                    customerIds.add(storage[i].getId());
-                }
-            }
-        }
-        return customerIds;
-    }
+//    public ArrayList<Integer> getAllCustomersThatCompletedChallenge(int challengeId) {
+//        ArrayList<Integer> customerIds = new ArrayList<>();
+//        for (int i=0; i<storage.length; i++) {
+//            if (storage[i] != null) {
+//                ArrayList<Integer> challengeIds = storage[i].getChallengesCompletedIds();
+//                if (challengeIds.contains(challengeId)) {
+//                    customerIds.add(storage[i].getId());
+//                }
+//            }
+//        }
+//        return customerIds;
+//    }
 
     public Integer rewardCustomerOfTheMonth (OrderRepository orderRepo, Integer reward) {
         int customerId = this.getCustomerWithMostOrders(orderRepo);

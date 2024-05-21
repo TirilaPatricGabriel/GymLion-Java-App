@@ -7,13 +7,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Order {
     private int customerId;
     private LocalDate date;
-    private ArrayList<String> codes;
+//    private ArrayList<String> codes;
     private double price;
 
-    public Order(int customerId, LocalDate date, ArrayList<String> codes, double price) {
+    public Order(int customerId, LocalDate date, double price) {
         this.customerId = customerId;
         this.date = date;
-        this.codes = codes;
+//        this.codes = codes;
         this.price = price;
     }
 
@@ -25,20 +25,12 @@ public class Order {
         return date;
     }
 
-    public ArrayList<String> getCodes() {
-        return codes;
-    }
-
     public double getPrice() {
         return price;
     }
 
     public void setDate(LocalDate date) {
         this.date = date;
-    }
-
-    public void setCodes(ArrayList<String> codes) {
-        this.codes = codes;
     }
 
     public void setPrice(double codes) {

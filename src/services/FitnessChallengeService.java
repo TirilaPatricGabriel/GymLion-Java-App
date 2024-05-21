@@ -49,17 +49,17 @@ public class FitnessChallengeService {
         challengesRepo.delete(chall);
     }
 
-    public ArrayList<Integer> getAllCustomersThatCompletedChallenge (CustomerRepository customerRepo, String challengeName) throws InvalidDataException {
-        if (challengeName == null || challengeName == "") {
-            throw new InvalidDataException("The name of the challenge is wrong!");
-        }
-        return challengesRepo.getAllCustomersThatCompletedChallenge(customerRepo, challengeName);
-    }
+//    public ArrayList<Integer> getAllCustomersThatCompletedChallenge (CustomerRepository customerRepo, String challengeName) throws InvalidDataException {
+//        if (challengeName == null || challengeName == "") {
+//            throw new InvalidDataException("The name of the challenge is wrong!");
+//        }
+//        return challengesRepo.getAllCustomersThatCompletedChallenge(customerRepo, challengeName);
+//    }
 
-    public void upgradeChallenge(CustomerRepository customerRepo, Integer numberOfCompletions, Integer points) throws InvalidDataException {
-        if (numberOfCompletions < 0) {
-            throw new InvalidDataException("Number of completions field is wrong!");
-        }
-        challengesRepo.upgradeChallenge(customerRepo, numberOfCompletions, points);
-    }
+//    public void upgradeChallenge(CustomerRepository customerRepo, Integer numberOfCompletions, Integer points) throws InvalidDataException {
+//        if (numberOfCompletions < 0) {
+//            throw new InvalidDataException("Number of completions field is wrong!");
+//        }
+//        challengesRepo.upgradeChallenge(customerRepo, numberOfCompletions, points);
+//    }
 }

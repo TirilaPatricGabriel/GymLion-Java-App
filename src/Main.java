@@ -67,16 +67,14 @@ public class Main {
 //        challengeService.registerNewEntity("ch2", "desc2", 100);
 //        challengeService.registerNewEntity("ch3", "desc3", 23);
 
-        ArrayList<FitnessChallenge> chArr1 = new ArrayList<>(), chArr2 = new ArrayList<>();
-        chArr1.add(ch1); chArr2.add(ch2); chArr1.add(ch2);
-        Customer customer1 = new Customer("c1", "e1", "p1", "a1", 20, 39.9, chArr1);
-        Customer customer2 = new Customer("c2", "e2", "p2", "a2", 25, 400, chArr2);
-        customerService.registerNewEntity("c1", "e1", "p1", "a1", 20, 39.9, chArr1);
-        customerService.registerNewEntity("c2", "e2", "p2", "a2", 25, 400, chArr2);
-        ArrayList<String> codes = new ArrayList<>();
-        codes.add("QPWRO"); codes.add("vwoWowv");
-        Order o1 = new Order(2, LocalDate.now(), codes, 399.9),
-              o2 = new Order(2, LocalDate.now(), codes, 399.9);
+//        ArrayList<FitnessChallenge> chArr1 = new ArrayList<>(), chArr2 = new ArrayList<>();
+//        chArr1.add(ch1); chArr2.add(ch2); chArr1.add(ch2);
+        Customer customer1 = new Customer("c1", "e1", "p1", "a1", 20, 39.9);
+        Customer customer2 = new Customer("c2", "e2", "p2", "a2", 25, 400);
+        customerService.registerNewEntity("c1", "e1", "p1", "a1", 20, 39.9);
+        customerService.registerNewEntity("c2", "e2", "p2", "a2", 25, 400);
+        Order o1 = new Order(2, LocalDate.now(), 399.9),
+              o2 = new Order(2, LocalDate.now(), 399.9);
         orderRepository.add(o1); orderRepository.add(o2);
 
         Athlete ath1 = new Athlete("n1", "e1", "p1", "a1", 20, 5, 1000, 2000),
@@ -232,10 +230,10 @@ public class Main {
                 case "9":
                     System.out.println("Challenge name:");
                     String challengeName = scanner.nextLine();
-                    ArrayList<Integer> ids = challengeService.getAllCustomersThatCompletedChallenge(customerRepository, challengeName);
-                    for (int i=0; i<ids.size(); i++) {
-                        System.out.println(ids.get(i));
-                    }
+//                    ArrayList<Integer> ids = challengeService.getAllCustomersThatCompletedChallenge(customerRepository, challengeName);
+//                    for (int i=0; i<ids.size(); i++) {
+//                        System.out.println(ids.get(i));
+//                    }
                     break;
                 case "10":
                     System.out.println("Number of completions:");
@@ -243,12 +241,12 @@ public class Main {
                     System.out.println("Points:");
                     Integer points = Integer.parseInt(scanner.nextLine());
 
-                    challengeService.upgradeChallenge(customerRepository, num, points);
-                    for (int i=0; i<challengeRepository.getSize(); i++) {
-                        if (challengeRepository.get(i) != null) {
-                            System.out.println(challengeRepository.get(i).getPoints());
-                        }
-                    }
+//                    challengeService.upgradeChallenge(customerRepository, num, points);
+//                    for (int i=0; i<challengeRepository.getSize(); i++) {
+//                        if (challengeRepository.get(i) != null) {
+//                            System.out.println(challengeRepository.get(i).getPoints());
+//                        }
+//                    }
                     System.out.println("Challenges upgraded successfully!");
                     break;
                 case "11":
@@ -334,7 +332,7 @@ public class Main {
 
                 ArrayList<FitnessChallenge> challengesCompleted = new ArrayList<>();
 
-                customerService.registerNewEntity(name, email, phone, address, age, balance, challengesCompleted);
+                customerService.registerNewEntity(name, email, phone, address, age, balance);
                 break;
             case "read":
                 System.out.println("Index:");

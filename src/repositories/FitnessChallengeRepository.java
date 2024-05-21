@@ -55,22 +55,22 @@ public class FitnessChallengeRepository implements GenericRepository<FitnessChal
         return storage.length;
     }
 
-    public ArrayList<Integer> getAllCustomersThatCompletedChallenge (CustomerRepository customerRepo, String challengeName) {
-        System.out.println(challengeName);
-        int challengeId = -1;
-        for (int i=0; i<storage.length; i++) {
-            if (storage[i] != null && storage[i].getName().equals(challengeName)) {
-                challengeId = storage[i].getId();
-            }
-        }
-        return customerRepo.getAllCustomersThatCompletedChallenge(challengeId);
-    }
+//    public ArrayList<Integer> getAllCustomersThatCompletedChallenge (CustomerRepository customerRepo, String challengeName) {
+//        System.out.println(challengeName);
+//        int challengeId = -1;
+//        for (int i=0; i<storage.length; i++) {
+//            if (storage[i] != null && storage[i].getName().equals(challengeName)) {
+//                challengeId = storage[i].getId();
+//            }
+//        }
+//        return customerRepo.getAllCustomersThatCompletedChallenge(challengeId);
+//    }
 
-    public void upgradeChallenge(CustomerRepository customerRepo, Integer numberOfCompletions, Integer points) {
-        for (int i=0; i<storage.length; i++) {
-            if (storage[i] != null && getAllCustomersThatCompletedChallenge(customerRepo, storage[i].getName()).size() < numberOfCompletions) {
-                storage[i].setPoints(storage[i].getPoints() + points);
-            }
-        }
-    }
+//    public void upgradeChallenge(CustomerRepository customerRepo, Integer numberOfCompletions, Integer points) {
+//        for (int i=0; i<storage.length; i++) {
+//            if (storage[i] != null && getAllCustomersThatCompletedChallenge(customerRepo, storage[i].getName()).size() < numberOfCompletions) {
+//                storage[i].setPoints(storage[i].getPoints() + points);
+//            }
+//        }
+//    }
 }

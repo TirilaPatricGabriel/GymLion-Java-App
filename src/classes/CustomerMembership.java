@@ -23,4 +23,8 @@ public class CustomerMembership {
     public void setAthleteId(Integer athleteId) {
         this.customerId = athleteId;
     }
+
+    public int getCustomerId() {
+        return customerId;
+    }
 }
