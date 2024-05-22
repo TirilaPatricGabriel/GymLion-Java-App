@@ -1,5 +1,6 @@
 package classes;
 
+import java.sql.Date;
 import java.time.LocalDate;
 import java.util.concurrent.atomic.AtomicInteger;
 public class Event {
@@ -27,10 +28,10 @@ public class Event {
         return this.id;
     }
 
-    public LocalDate getStartDate() {
+    public Date getStartDate() {
         return this.startDate;
     }
-    public LocalDate getEndDate() {
+    public Date getEndDate() {
         return this.endDate;
     }
 

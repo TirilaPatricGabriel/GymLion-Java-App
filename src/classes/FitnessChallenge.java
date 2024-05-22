@@ -3,7 +3,7 @@ package classes;
 import java.util.concurrent.atomic.AtomicInteger;
 public class FitnessChallenge {
     private static final AtomicInteger count = new AtomicInteger(0);
-    private final int id;
+    private int id;
 
     private String name, description;
     private Integer points;
@@ -44,5 +44,9 @@ public class FitnessChallenge {
 
     public void setPoints(Integer points) {
         this.points = points;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

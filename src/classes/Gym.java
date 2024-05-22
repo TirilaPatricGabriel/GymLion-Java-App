@@ -3,7 +3,7 @@ package classes;
 import java.util.concurrent.atomic.AtomicInteger;
 public class Gym {
     private static final AtomicInteger count = new AtomicInteger(0);
-    private final int id;
+    private int id;
     private String name, description;
     private Integer capacity;
     private Integer locationId;
@@ -49,6 +49,14 @@ public class Gym {
     }
 
     public void setLocation(Integer locationId) {
+        this.locationId = locationId;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setLocationId(Integer locationId) {
         this.locationId = locationId;
     }
 }

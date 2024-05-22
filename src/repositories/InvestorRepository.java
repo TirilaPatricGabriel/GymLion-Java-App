@@ -1,55 +1,92 @@
 package repositories;
 
 import classes.Investor;
+import config.DatabaseConfiguration;
 
-import java.util.Arrays;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- * Repositories are responsible for interacting with the storage of entities. Usually a 1-to-1 relation with the
- * entities. Any entity that should be persisted, should have a Repo.
- * */
 public class InvestorRepository implements GenericRepository<Investor> {
-    private Investor[] storage = new Investor[10];
 
     @Override
     public void add(Investor entity) {
-        for (int i=0; i<storage.length; i++) {
-            if (storage[i] == null) {
-                storage[i] = entity;
-                return;
+        String sql = "INSERT INTO investors (name, contractValue) VALUES (?, ?)";
+        try (Connection connection = DatabaseConfiguration.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setString(1, entity.getName());
+            stmt.setDouble(2, entity.getContractValue());
+            stmt.executeUpdate();
+
+            // Retrieve the generated investor ID
+            ResultSet rs = stmt.getGeneratedKeys();
+            if (rs.next()) {
+                int generatedId = rs.getInt(1);
+                entity.setId(generatedId);
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-        Investor[] newStorage = Arrays.<Investor, Investor>copyOf(storage, 2*storage.length, Investor[].class);
-        newStorage[storage.length] = entity;
-        storage = newStorage;
     }
 
     @Override
     public Investor get(int index) {
-        return storage[index];
+        Investor investor = null;
+        String sql = "SELECT * FROM investors WHERE investorId = ?";
+        try (Connection connection = DatabaseConfiguration.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, index);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                String name = rs.getString("name");
+                double contractValue = rs.getDouble("contractValue");
+                investor = new Investor(name, contractValue);
+                investor.setId(index);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return investor;
     }
 
     @Override
     public void update(Investor entity) {
-        for (int i=0; i<storage.length; i++) {
-            if (storage[i] == entity) {
-                // TODO UPDATE
-            }
+        String sql = "UPDATE investors SET name = ?, contractValue = ? WHERE investorId = ?";
+        try (Connection connection = DatabaseConfiguration.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, entity.getName());
+            stmt.setDouble(2, entity.getContractValue());
+            stmt.setInt(3, entity.getId());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
     @Override
     public void delete(Investor entity) {
-        for (int i = 0; i < storage.length; i++) {
-            if (storage[i] != null && storage[i] == entity) {
-                storage[i] = null;
-                break;
-            }
+        String sql = "DELETE FROM investors WHERE investorId = ?";
+        try (Connection connection = DatabaseConfiguration.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, entity.getId());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
     @Override
     public int getSize() {
-        return storage.length;
+        String sql = "SELECT COUNT(*) FROM investors";
+        try (Connection connection = DatabaseConfiguration.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return 0;
     }
 }

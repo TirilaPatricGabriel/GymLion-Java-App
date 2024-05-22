@@ -1,82 +1,129 @@
 package repositories;
 
 import classes.GymMembership;
+import config.DatabaseConfiguration;
 
-import java.util.Arrays;
+import java.sql.*;
 import java.util.ArrayList;
-import java.util.Objects;
+import java.util.List;
 
-/**
- * Repositories are responsible for interacting with the storage of entities. Usually a 1-to-1 relation with the
- * entities. Any entity that should be persisted, should have a Repo.
- * */
 public class GymMembershipRepository implements GenericRepository<GymMembership> {
-
-    private static GymMembership[] storage = new GymMembership[10];
 
     @Override
     public void add(GymMembership entity) {
-        for (int i=0; i<storage.length; i++) {
-            if (storage[i] == null) {
-                storage[i] = entity;
-                return;
-            }
+        String sql = "CALL INSERT_GYM_MEMBERSHIP(?, ?, ?, ?, ?)";
+        try (Connection connection = DatabaseConfiguration.getConnection();
+             CallableStatement stmt = connection.prepareCall(sql)) {
+            stmt.registerOutParameter(1, Types.INTEGER);
+            stmt.setInt(2, entity.getGymId());
+            stmt.setInt(3, entity.getDurationInMonths());
+            stmt.setDouble(4, entity.getPrice());
+            stmt.setString(5, entity.getCode());
+            stmt.execute();
+
+            // Retrieve the generated membership ID
+            int generatedId = stmt.getInt(1);
+            entity.setId(generatedId);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-        GymMembership[] newStorage = Arrays.<GymMembership, GymMembership>copyOf(storage, 2*storage.length, GymMembership[].class);
-        newStorage[storage.length] = entity;
-        storage = newStorage;
     }
 
     @Override
     public GymMembership get(int index) {
-        return storage[index];
+        GymMembership membership = null;
+        String sql = "SELECT gm.membershipId, gm.gymId, gm.durationInMonths, p.price, p.code " +
+                "FROM gym_memberships gm JOIN products p ON gm.productId = p.productId WHERE gm.membershipId = ?";
+        try (Connection connection = DatabaseConfiguration.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, index);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                int gymId = rs.getInt("gymId");
+                int durationInMonths = rs.getInt("durationInMonths");
+                double price = rs.getDouble("price");
+                String code = rs.getString("code");
+                membership = new GymMembership(gymId, price, durationInMonths, code);
+                membership.setId(rs.getInt("membershipId"));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return membership;
     }
 
     @Override
     public void update(GymMembership entity) {
-        for (int i=0; i<storage.length; i++) {
-            if (storage[i] == entity) {
-                // TODO UPDATE
-            }
+        String sql = "UPDATE gym_memberships gm JOIN products p ON gm.productId = p.productId " +
+                "SET gm.gymId = ?, gm.durationInMonths = ?, p.price = ?, p.code = ? WHERE gm.membershipId = ?";
+        try (Connection connection = DatabaseConfiguration.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, entity.getGymId());
+            stmt.setInt(2, entity.getDurationInMonths());
+            stmt.setDouble(3, entity.getPrice());
+            stmt.setString(4, entity.getCode());
+            stmt.setInt(5, entity.getId());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
     @Override
     public void delete(GymMembership entity) {
-        for (int i = 0; i < storage.length; i++) {
-            if (storage[i] != null && storage[i] == entity) {
-                storage[i] = null;
-                break;
-            }
+        String sql = "DELETE FROM gym_memberships WHERE membershipId = ?";
+        try (Connection connection = DatabaseConfiguration.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, entity.getId());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
     @Override
     public int getSize() {
-        return storage.length;
+        String sql = "SELECT COUNT(*) FROM gym_memberships";
+        try (Connection connection = DatabaseConfiguration.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return 0;
     }
 
-    static public ArrayList<Integer> getGymIdsOfMembershipsWithPricesWithinALimit (Double startPrice, Double endPrice) {
-        ArrayList<Integer> ids = new ArrayList<>();
-        for (int i = 0; i < storage.length; i++) {
-            if (storage[i] != null) {
-                double price = storage[i].getPrice();
-                if (price >= startPrice && price <= endPrice) {
-                    ids.add(storage[i].getGymId());
-                }
-                break;
+    public List<Integer> getGymIdsOfMembershipsWithPricesWithinALimit(Double startPrice, Double endPrice) {
+        List<Integer> ids = new ArrayList<>();
+        String sql = "SELECT gm.gymId FROM gym_memberships gm JOIN products p ON gm.productId = p.productId " +
+                "WHERE p.price BETWEEN ? AND ?";
+        try (Connection connection = DatabaseConfiguration.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setDouble(1, startPrice);
+            stmt.setDouble(2, endPrice);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                ids.add(rs.getInt("gymId"));
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
         return ids;
     }
 
-    public void changeMembershipPricesOfSelectGym (Integer gymId, Integer percent) {
-        for (int i=0; i<storage.length; i++) {
-            if (storage[i] != null && Objects.equals(storage[i].getGymId(), gymId)) {
-                System.out.println(storage[i].getPrice());
-                storage[i].setPrice(storage[i].getPrice() + ((double) percent / 100 * storage[i].getPrice()));
-                System.out.println(storage[i].getPrice());
-            }
+    public void changeMembershipPricesOfSelectGym(Integer gymId, Integer percent) {
+        String sql = "UPDATE products p JOIN gym_memberships gm ON p.productId = gm.productId " +
+                "SET p.price = p.price + (p.price * ? / 100) WHERE gm.gymId = ?";
+        try (Connection connection = DatabaseConfiguration.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, percent);
+            stmt.setInt(2, gymId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 }

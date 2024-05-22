@@ -3,7 +3,7 @@ package classes;
 import java.util.concurrent.atomic.AtomicInteger;
 public class Investor {
     private static final AtomicInteger count = new AtomicInteger(0);
-    private final int id;
+    private int id;
     private String name;
     private double contractValue;
 
@@ -34,5 +34,9 @@ public class Investor {
 
     public void setContractValue(double contractValue) {
         this.contractValue = contractValue;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

@@ -49,15 +49,15 @@ public class EventService {
         eventRepo.delete(event);
     }
 
-    public ArrayList<HashMap<String, String>> getAllEventsFromAPlaceWithinAPeriod (LocalDate startDate, LocalDate endDate, String countryName, LocationRepository locationRepo) throws InvalidDataException {
-        if (startDate == null || endDate == null || startDate.compareTo(endDate) > 0) {
-            throw new InvalidDataException("Invalid dates");
-        }
-        return eventRepo.getAllEventsFromAPlaceWithinAPeriod(startDate, endDate, countryName, locationRepo);
-    }
-
-    public void deleteAllEventsThatAlreadyTookPlace () {
-        eventRepo.deleteAllEventsThatAlreadyTookPlace();
-        System.out.println("All events that took place were deleted successfully!");
-    }
+//    public ArrayList<HashMap<String, String>> getAllEventsFromAPlaceWithinAPeriod (LocalDate startDate, LocalDate endDate, String countryName, LocationRepository locationRepo) throws InvalidDataException {
+//        if (startDate == null || endDate == null || startDate.compareTo(endDate) > 0) {
+//            throw new InvalidDataException("Invalid dates");
+//        }
+//        return eventRepo.getAllEventsFromAPlaceWithinAPeriod(startDate, endDate, countryName, locationRepo);
+//    }
+//
+//    public void deleteAllEventsThatAlreadyTookPlace () {
+//        eventRepo.deleteAllEventsThatAlreadyTookPlace();
+//        System.out.println("All events that took place were deleted successfully!");
+//    }
 }

@@ -11,6 +11,7 @@ import java.time.format.DateTimeFormatter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -149,7 +150,7 @@ public class Main {
                     Double startPrice = Double.parseDouble(scanner.nextLine());
                     System.out.println("Last price:");
                     Double endPrice = Double.parseDouble(scanner.nextLine());
-                    ArrayList<String> gyms = gymService.findGymsBasedOnMembershipPrices(startPrice, endPrice);
+                    List<String> gyms = gymService.findGymsBasedOnMembershipPrices(startPrice, endPrice);
                     System.out.println(gyms.size());
                     for (int i=0; i<gyms.size(); i++) {
                         System.out.println(gyms.get(i));
@@ -198,7 +199,7 @@ public class Main {
                     System.out.println("New balance: " + customerRepository.get(rewardedCustomerId).getBalance());
                     break;
                 case "7":
-                    eventService.deleteAllEventsThatAlreadyTookPlace();
+//                    eventService.deleteAllEventsThatAlreadyTookPlace();
                     for (int i=0; i<eventRepository.getSize(); i++) {
                         if (eventRepository.get(i) != null) {
                             System.out.println(eventRepository.get(i).getName());
@@ -217,15 +218,15 @@ public class Main {
                     System.out.println("Country name:");
                     String nameOfCountry = scanner.nextLine();
 
-                    ArrayList<HashMap<String, String>> arr = eventService.getAllEventsFromAPlaceWithinAPeriod(
-                                                            LocalDate.of(sYear, sMonth, sDay),
-                                                            LocalDate.of(eYear, eMonth, eDay),
-                                                            nameOfCountry,
-                                                            locationRepository
-                                                            );
-                    for (int i=0; i<arr.size(); i++) {
-                        System.out.println(arr.get(i).get("name") + " " + arr.get(i).get("description"));
-                    }
+//                    ArrayList<HashMap<String, String>> arr = eventService.getAllEventsFromAPlaceWithinAPeriod(
+//                                                            LocalDate.of(sYear, sMonth, sDay),
+//                                                            LocalDate.of(eYear, eMonth, eDay),
+//                                                            nameOfCountry,
+//                                                            locationRepository
+//                                                            );
+//                    for (int i=0; i<arr.size(); i++) {
+//                        System.out.println(arr.get(i).get("name") + " " + arr.get(i).get("description"));
+//                    }
                     break;
                 case "9":
                     System.out.println("Challenge name:");
@@ -440,7 +441,7 @@ public class Main {
                 System.out.println("Gym ID:");
                 Integer gymID = Integer.parseInt(scanner.nextLine());
 
-                gymService.update(gymID);
+//                gymService.update(gymID);
                 break;
             default:
                 System.out.println("Invalid CRUD operation. Please choose create, read, or delete.");

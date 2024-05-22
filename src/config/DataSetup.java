@@ -158,6 +158,13 @@ public class DataSetup {
                 "SET locationId = LAST_INSERT_ID(); " +
                 "END";
 
+        String deleteProcedureEvent = "DROP PROCEDURE IF EXISTS INSERT_EVENT;";
+        String createStoredProcedureEvent = "CREATE PROCEDURE INSERT_EVENT(OUT eventId INT, IN startDate DATE, IN endDate DATE, IN name VARCHAR(50), IN description VARCHAR(255), IN capacity INT, IN locationId INT) " +
+                "BEGIN " +
+                "INSERT INTO events(startDate, endDate, name, description, capacity, locationId) VALUES (startDate, endDate, name, description, capacity, locationId); " +
+                "SET eventId = LAST_INSERT_ID(); " +
+                "END";
+
         stmt.execute(deleteProcedurePersons);
         stmt.execute(createStoredProcedurePersons);
 
@@ -184,6 +191,9 @@ public class DataSetup {
 
         stmt.execute(deleteProcedureLocation);
         stmt.execute(createStoredProcedureLocation);
+
+        stmt.execute(deleteProcedureEvent);
+        stmt.execute(createStoredProcedureEvent);
 
         stmt.close();
         databaseConnection.close();
