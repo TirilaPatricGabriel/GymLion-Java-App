@@ -4,10 +4,14 @@ import classes.Order;
 import config.DatabaseConfiguration;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class OrderRepository implements GenericRepository<Order> {
+
+    private static Scanner scanner = new Scanner(System.in);
 
     @Override
     public void add(Order entity) {
@@ -54,11 +58,19 @@ public class OrderRepository implements GenericRepository<Order> {
     @Override
     public void update(Order entity) {
         String sql = "UPDATE orders SET customerId = ?, date = ?, price = ? WHERE orderId = ?";
+
+        System.out.println("Enter new customer ID:");
+        int newCustomerId = Integer.parseInt(scanner.nextLine());
+        System.out.println("Enter new date (YYYY-MM-DD):");
+        LocalDate newDate = LocalDate.parse(scanner.nextLine());
+        System.out.println("Enter new price:");
+        double newPrice = Double.parseDouble(scanner.nextLine());
+
         try (Connection connection = DatabaseConfiguration.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, entity.getCustomerId());
-            stmt.setDate(2, Date.valueOf(entity.getDate()));
-            stmt.setDouble(3, entity.getPrice());
+            stmt.setInt(1, newCustomerId);
+            stmt.setDate(2, Date.valueOf(newDate));
+            stmt.setDouble(3, newPrice);
             stmt.setInt(4, entity.getId());
             stmt.executeUpdate();
         } catch (SQLException e) {

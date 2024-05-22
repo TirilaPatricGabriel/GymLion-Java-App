@@ -49,4 +49,12 @@ public class FitnessChallenge {
     public void setId(int id) {
         this.id = id;
     }
+
+    @Override
+    public String toString() {
+        return "FitnessChallenge{" +
+                "name='" + getName() + '\'' +
+                ", description='" + getDescription() + '\'' +
+                ", points='" + getPoints() + '\'' + '}';
+    }
 }

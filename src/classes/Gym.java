@@ -59,4 +59,14 @@ public class Gym {
     public void setLocationId(Integer locationId) {
         this.locationId = locationId;
     }
+
+    @Override
+    public String toString() {
+        return "Gym{" +
+                "Name='" + getName() + '\'' +
+                ", description='" + getDescription() + '\'' +
+                ", capacity=" + getCapacity() +
+                ", locationId=" + getLocationId() +
+                '}';
+    }
 }

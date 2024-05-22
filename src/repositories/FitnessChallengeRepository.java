@@ -6,8 +6,11 @@ import config.DatabaseConfiguration;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class FitnessChallengeRepository implements GenericRepository<FitnessChallenge> {
+
+    private static Scanner scanner = new Scanner(System.in);
 
     @Override
     public void add(FitnessChallenge entity) {
@@ -54,11 +57,18 @@ public class FitnessChallengeRepository implements GenericRepository<FitnessChal
     @Override
     public void update(FitnessChallenge entity) {
         String sql = "UPDATE fitness_challenges SET name = ?, description = ?, points = ? WHERE challengeId = ?";
+        System.out.println("New name:");
+        String name = scanner.nextLine();
+        System.out.println("New description:");
+        String description = scanner.nextLine();
+        System.out.println("New points:");
+        Integer points = Integer.parseInt(scanner.nextLine());
+
         try (Connection connection = DatabaseConfiguration.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, entity.getName());
-            stmt.setString(2, entity.getDescription());
-            stmt.setInt(3, entity.getPoints());
+            stmt.setString(1, name);
+            stmt.setString(2, description);
+            stmt.setInt(3, points);
             stmt.setInt(4, entity.getId());
             stmt.executeUpdate();
         } catch (SQLException e) {

@@ -41,4 +41,16 @@ public class Order {
     public void setPrice(double price) {
         this.price = price;
     }
+
+    public void setCustomerId(int customerId) {
+        this.customerId = customerId;
+    }
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "date='" + getDate() + '\'' +
+                ", price='" + getPrice() + '\'' +
+                '}';
+    }
 }

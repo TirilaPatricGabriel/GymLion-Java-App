@@ -32,4 +32,13 @@ public class GymMembership extends Product  {
         return super.getPrice();
     }
 
+    @Override
+    public String toString() {
+        return "Membership{" +
+                "gymId=" + getGymId() +
+                ", price='" + super.getPrice() +
+                ", duration=" + getDurationInMonths() + " months" +
+                ", code=" + super.getCode() +
+                '}';
+    }
 }

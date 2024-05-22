@@ -6,8 +6,11 @@ import config.DatabaseConfiguration;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class GymRepository implements GenericRepository<Gym> {
+
+    private static Scanner scanner = new Scanner(System.in);
 
     @Override
     public void add(Gym entity) {
@@ -90,12 +93,22 @@ public class GymRepository implements GenericRepository<Gym> {
     @Override
     public void update(Gym entity) {
         String sql = "UPDATE gyms SET name = ?, description = ?, capacity = ?, locationId = ? WHERE gymId = ?";
+
+        System.out.println("Enter new name:");
+        String name = scanner.nextLine();
+        System.out.println("Enter new description:");
+        String description = scanner.nextLine();
+        System.out.println("Enter new capacity:");
+        int capacity = Integer.parseInt(scanner.nextLine());
+        System.out.println("Enter new location ID:");
+        int locationId = Integer.parseInt(scanner.nextLine());
+
         try (Connection connection = DatabaseConfiguration.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, entity.getName());
-            stmt.setString(2, entity.getDescription());
-            stmt.setInt(3, entity.getCapacity());
-            stmt.setInt(4, entity.getLocationId());
+            stmt.setString(1, name);
+            stmt.setString(2, description);
+            stmt.setInt(3, capacity);
+            stmt.setInt(4, locationId);
             stmt.setInt(5, entity.getId());
             stmt.executeUpdate();
         } catch (SQLException e) {

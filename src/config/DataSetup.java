@@ -7,8 +7,25 @@ import java.sql.Statement;
 public class DataSetup {
 
     public void createTablesAndStoredProcedures() throws SQLException {
+        String dropTablePersonsSql = "DROP TABLE IF EXISTS persons";
+        String dropTableAthletesSql = "DROP TABLE IF EXISTS athletes";
+        String dropTableCustomersSql = "DROP TABLE IF EXISTS customers";
+        String dropTableLocationsSql = "DROP TABLE IF EXISTS locations";
+        String dropTableGymsSql = "DROP TABLE IF EXISTS gyms";
+        String dropTableFitnessChallengesSql = "DROP TABLE IF EXISTS fitness_challenges";
+        String dropTableCustomerFitnessChallengesSql = "DROP TABLE IF EXISTS customer_fitness_challenges";
+        String dropTableProductsSql = "DROP TABLE IF EXISTS products";
+        String dropTableGymMembershipsSql = "DROP TABLE IF EXISTS gym_memberships";
+        String dropTableCustomerMembershipsSql = "DROP TABLE IF EXISTS customer_memberships";
+        String dropTableOrdersSql = "DROP TABLE IF EXISTS orders";
+        String dropTableOrderProductsSql = "DROP TABLE IF EXISTS order_products";
+        String dropTableEventsSql = "DROP TABLE IF EXISTS events";
+        String dropTableInvestorsSql = "DROP TABLE IF EXISTS investors";
+        String dropTableCompetitionsSql = "DROP TABLE IF EXISTS competitions";
+        String dropTableCompetitionAthletesSql = "DROP TABLE IF EXISTS competition_athletes";
+
         String createTablePersonsSql = "CREATE TABLE IF NOT EXISTS persons " +
-                "(id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(50), age INT)";
+                "(id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(50), email VARCHAR(100), phone VARCHAR(50), address VARCHAR(200), age INT)";
 
         String createTableAthletesSql = "CREATE TABLE IF NOT EXISTS athletes " +
                 "(athleteId INT PRIMARY KEY, salary DOUBLE, bonusPerTenThousandLikes DOUBLE, socialMediaFollowers INT, FOREIGN KEY (athleteId) REFERENCES persons(id))";
@@ -67,6 +84,25 @@ public class DataSetup {
                 "FOREIGN KEY (competitionId) REFERENCES competitions(competitionId), " +
                 "FOREIGN KEY (athleteId) REFERENCES athletes(athleteId))";
 
+        String[] dropStatements = {
+                dropTableCompetitionAthletesSql,
+                dropTableCompetitionsSql,
+                dropTableInvestorsSql,
+                dropTableEventsSql,
+                dropTableOrderProductsSql,
+                dropTableOrdersSql,
+                dropTableCustomerMembershipsSql,
+                dropTableGymMembershipsSql,
+                dropTableProductsSql,
+                dropTableCustomerFitnessChallengesSql,
+                dropTableFitnessChallengesSql,
+                dropTableGymsSql,
+                dropTableLocationsSql,
+                dropTableCustomersSql,
+                dropTableAthletesSql,
+                dropTablePersonsSql
+        };
+
         String[] createStatements = {
                 createTablePersonsSql,
                 createTableAthletesSql,
@@ -89,30 +125,33 @@ public class DataSetup {
         Connection databaseConnection = DatabaseConfiguration.getConnection();
         Statement stmt = databaseConnection.createStatement();
 
+        for (String sql : dropStatements) {
+            stmt.execute(sql);
+        }
+
         for (String sql : createStatements) {
             stmt.execute(sql);
         }
 
-        // Create stored procedures
         String deleteProcedurePersons = "DROP PROCEDURE IF EXISTS INSERT_PERSON;";
-        String createStoredProcedurePersons = "CREATE PROCEDURE INSERT_PERSON(OUT id INT, IN name VARCHAR(50), IN age INT) " +
+        String createStoredProcedurePersons = "CREATE PROCEDURE INSERT_PERSON(OUT id INT, IN name VARCHAR(50), IN email VARCHAR(50), IN phone VARCHAR(20), IN address VARCHAR(200), IN age INT) " +
                 "BEGIN " +
-                "INSERT INTO persons(name, age) VALUES (name, age); " +
+                "INSERT INTO persons(name, email, phone, address, age) VALUES (name, email, phone, address, age); " +
                 "SET id = LAST_INSERT_ID(); " +
                 "END";
 
         String deleteProcedureAthletes = "DROP PROCEDURE IF EXISTS INSERT_ATHLETE;";
-        String createStoredProcedureAthletes = "CREATE PROCEDURE INSERT_ATHLETE(OUT athleteId INT, IN name VARCHAR(50), IN age INT, IN salary DOUBLE, IN bonusPerTenThousandLikes DOUBLE, IN socialMediaFollowers INT) " +
+        String createStoredProcedureAthletes = "CREATE PROCEDURE INSERT_ATHLETE(OUT athleteId INT, IN name VARCHAR(50), IN email VARCHAR(50), IN phone VARCHAR(20), IN address VARCHAR(200), IN age INT, IN salary DOUBLE, IN bonusPerTenThousandLikes DOUBLE, IN socialMediaFollowers INT) " +
                 "BEGIN " +
-                "CALL INSERT_PERSON(@id, name, age); " +
+                "CALL INSERT_PERSON(@id, name, email, phone, address, age); " +
                 "INSERT INTO athletes(athleteId, salary, bonusPerTenThousandLikes, socialMediaFollowers) VALUES (@id, salary, bonusPerTenThousandLikes, socialMediaFollowers); " +
                 "SET athleteId = @id; " +
                 "END";
 
         String deleteProcedureCustomers = "DROP PROCEDURE IF EXISTS INSERT_CUSTOMER;";
-        String createStoredProcedureCustomers = "CREATE PROCEDURE INSERT_CUSTOMER(OUT customerId INT, IN name VARCHAR(50), IN age INT, IN balance DOUBLE) " +
+        String createStoredProcedureCustomers = "CREATE PROCEDURE INSERT_CUSTOMER(OUT customerId INT, IN name VARCHAR(50), IN email VARCHAR(50), IN phone VARCHAR(20), IN address VARCHAR(200), IN age INT, IN balance DOUBLE) " +
                 "BEGIN " +
-                "CALL INSERT_PERSON(@id, name, age); " +
+                "CALL INSERT_PERSON(@id, name, email, phone, address, age); " +
                 "INSERT INTO customers(customerId, balance) VALUES (@id, balance); " +
                 "SET customerId = @id; " +
                 "END";

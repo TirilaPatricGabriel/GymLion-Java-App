@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Event {
     private static final AtomicInteger count = new AtomicInteger(0);
     private final int id;
-    private LocalDate startDate, endDate;
+    private Date startDate, endDate;
     private String name, description;
     private Integer capacity;
     private Integer locationId;
@@ -16,8 +16,8 @@ public class Event {
     }
     public Event(LocalDate startDate, LocalDate endDate, String name, String description, Integer capacity, Integer locationId) {
         this.id = count.incrementAndGet();
-        this.startDate = startDate;
-        this.endDate = endDate;
+        this.startDate = Date.valueOf(startDate);
+        this.endDate = Date.valueOf(endDate);
         this.name = name;
         this.description = description;
         this.capacity = capacity;
@@ -28,11 +28,11 @@ public class Event {
         return this.id;
     }
 
-    public Date getStartDate() {
-        return this.startDate;
+    public LocalDate getStartDate() {
+        return this.startDate.toLocalDate();
     }
-    public Date getEndDate() {
-        return this.endDate;
+    public LocalDate getEndDate() {
+        return this.endDate.toLocalDate();
     }
 
     public Integer getLocationId() {
@@ -56,6 +56,6 @@ public class Event {
     }
 
     public void setMyDate(LocalDate startDate) {
-        this.startDate = startDate;
+        this.startDate = Date.valueOf(startDate);
     }
 }

@@ -6,8 +6,11 @@ import config.DatabaseConfiguration;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class ProductRepository {
+
+    private static Scanner scanner = new Scanner(System.in);
 
     public void add(Product product) throws SQLException {
         String sql = "CALL INSERT_PRODUCT(?, ?)";
@@ -17,6 +20,8 @@ public class ProductRepository {
             stmt.setDouble(2, product.getPrice());
             stmt.setString(3, product.getCode());
             stmt.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
@@ -35,10 +40,16 @@ public class ProductRepository {
 
     public void update(Product product) throws SQLException {
         String sql = "UPDATE products SET price = ?, code = ? WHERE productId = ?";
+
+        System.out.println("Code:");
+        String code = scanner.nextLine();
+        System.out.println("Price:");
+        Double price = Double.parseDouble(scanner.nextLine());
+
         try (Connection connection = DatabaseConfiguration.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setDouble(1, product.getPrice());
-            stmt.setString(2, product.getCode());
+            stmt.setDouble(1, price);
+            stmt.setString(2, code);
             stmt.setInt(3, product.getId());
             stmt.executeUpdate();
         }

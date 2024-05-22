@@ -46,7 +46,7 @@ public class LocationService {
         locationRepo.delete(location);
     }
 
-    public ArrayList<Location> mostFrequentLocations(EventRepository eventRepo) {
-        return locationRepo.mostFrequentLocations(eventRepo);
-    }
+//    public ArrayList<Location> mostFrequentLocations(EventRepository eventRepo) {
+//        return locationRepo.mostFrequentLocations(eventRepo);
+//    }
 }

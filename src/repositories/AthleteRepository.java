@@ -8,6 +8,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
 
 /**
  * Repositories are responsible for interacting with the storage of entities. Usually a 1-to-1 relation with the
@@ -16,18 +17,22 @@ import java.util.List;
 public class AthleteRepository implements GenericRepository<Athlete> {
 
     private Athlete[] storage = new Athlete[100];
+    private static Scanner scanner = new Scanner(System.in);
 
     @Override
     public void add(Athlete entity) {
-        String sql = "CALL INSERT_ATHLETE(?, ?, ?, ?, ?, ?)";
+        String sql = "CALL INSERT_ATHLETE(?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection connection = DatabaseConfiguration.getConnection();
              CallableStatement stmt = connection.prepareCall(sql)) {
             stmt.registerOutParameter(1, Types.INTEGER);
             stmt.setString(2, entity.getName());
-            stmt.setInt(3, entity.getAge());
-            stmt.setDouble(4, entity.getSalary());
-            stmt.setDouble(5, entity.getBonusPerTenThousandLikes());
-            stmt.setInt(6, entity.getSocialMediaFollowers());
+            stmt.setString(3, entity.getEmail());
+            stmt.setString(4, entity.getPhone());
+            stmt.setString(5, entity.getAddress());
+            stmt.setInt(6, entity.getAge());
+            stmt.setDouble(7, entity.getSalary());
+            stmt.setDouble(8, entity.getBonusPerTenThousandLikes());
+            stmt.setInt(9, entity.getSocialMediaFollowers());
             stmt.execute();
 
             int generatedId = stmt.getInt(1);
@@ -61,7 +66,7 @@ public class AthleteRepository implements GenericRepository<Athlete> {
                     if (personRs.next()) {
                         String name = personRs.getString("name");
                         int age = personRs.getInt("age");
-                        String email = personRs.getString("emal");
+                        String email = personRs.getString("email");
                         String phone = personRs.getString("phone");
                         String address = personRs.getString("address");
 
@@ -78,21 +83,41 @@ public class AthleteRepository implements GenericRepository<Athlete> {
 
     @Override
     public void update(Athlete entity) {
-        String updatePersonSql = "UPDATE persons SET name = ?, age = ? WHERE id = ?";
+        String updatePersonSql = "UPDATE persons SET name = ?, email = ?, phone = ?, address = ?, age = ? WHERE id = ?";
         String updateAthleteSql = "UPDATE athletes SET salary = ?, bonusPerTenThousandLikes = ?, socialMediaFollowers = ? WHERE athleteId = ?";
+
+        System.out.println("New name:");
+        String name = scanner.nextLine();
+        System.out.println("New email:");
+        String email = scanner.nextLine();
+        System.out.println("New phone:");
+        String phone = scanner.nextLine();
+        System.out.println("New address:");
+        String address = scanner.nextLine();
+        System.out.println("New age:");
+        Integer age = Integer.parseInt(scanner.nextLine());
+        System.out.println("New salary:");
+        Double salary = Double.parseDouble(scanner.nextLine());
+        System.out.println("New bonus:");
+        Integer bonus = Integer.parseInt(scanner.nextLine());
+        System.out.println("New followers:");
+        Integer followers = Integer.parseInt(scanner.nextLine());
 
         try (Connection connection = DatabaseConfiguration.getConnection();
              PreparedStatement personStmt = connection.prepareStatement(updatePersonSql);
              PreparedStatement athleteStmt = connection.prepareStatement(updateAthleteSql)) {
 
-            personStmt.setString(1, entity.getName());
-            personStmt.setInt(2, entity.getAge());
-            personStmt.setInt(3, entity.getId());
+            personStmt.setString(1, name);
+            personStmt.setString(2, email);
+            personStmt.setString(3, phone);
+            personStmt.setString(4, address);
+            personStmt.setInt(5, age);
+            personStmt.setInt(6, entity.getId());
             personStmt.executeUpdate();
 
-            athleteStmt.setDouble(1, entity.getSalary());
-            athleteStmt.setDouble(2, entity.getBonusPerTenThousandLikes());
-            athleteStmt.setInt(3, entity.getSocialMediaFollowers());
+            athleteStmt.setDouble(1, salary);
+            athleteStmt.setDouble(2, bonus);
+            athleteStmt.setInt(3, followers);
             athleteStmt.setInt(4, entity.getId());
             athleteStmt.executeUpdate();
         } catch (SQLException e) {

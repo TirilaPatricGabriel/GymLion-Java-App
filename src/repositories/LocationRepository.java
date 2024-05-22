@@ -7,6 +7,7 @@ import config.DatabaseConfiguration;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Scanner;
 
 /**
  * Repositories are responsible for interacting with the storage of entities. Usually a 1-to-1 relation with the
@@ -14,6 +15,7 @@ import java.util.Arrays;
  * */
 public class LocationRepository implements GenericRepository<Location> {
 
+    private static Scanner scanner = new Scanner(System.in);
     private Location[] storage = new Location[100];
 
     @Override
@@ -48,7 +50,7 @@ public class LocationRepository implements GenericRepository<Location> {
                 String cityName = locations.getString("cityName");
                 String countryName = locations.getString("countryName");
                 double latitude = locations.getDouble("latitude");
-                double longitude = locations.getDouble("longitute");
+                double longitude = locations.getDouble("longitude");
                 location = new Location(cityName, countryName, latitude, longitude);
             }
         } catch (SQLException e) {
@@ -62,13 +64,23 @@ public class LocationRepository implements GenericRepository<Location> {
     public void update(Location entity) {
         String updateLocationSql = "UPDATE locations SET cityName = ?, countryName = ?, latitude = ?, longitude = ? WHERE locationId = ?";
 
+        System.out.println("Country name:");
+        String country = scanner.nextLine();
+        System.out.println("City name:");
+        String city = scanner.nextLine();
+        System.out.println("Latitude:");
+        double latitude = Double.parseDouble(scanner.nextLine());
+        System.out.println("Longitude:");
+        double longitude = Double.parseDouble(scanner.nextLine());
+
         try (Connection connection = DatabaseConfiguration.getConnection();
              PreparedStatement locationQuery = connection.prepareStatement(updateLocationSql)) {
 
-            locationQuery.setString(1, entity.getCityName());
-            locationQuery.setString(2, entity.getCountryName());
-            locationQuery.setDouble(3, entity.getLatitude());
-            locationQuery.setDouble(4, entity.getLongitude());
+            locationQuery.setString(1, city);
+            locationQuery.setString(2, country);
+            locationQuery.setDouble(3, latitude);
+            locationQuery.setDouble(4, longitude);
+            locationQuery.setDouble(5, entity.getId());
             locationQuery.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -137,41 +149,41 @@ public class LocationRepository implements GenericRepository<Location> {
 //        return storage.length;
 //    }
 
-    public ArrayList<Location> mostFrequentLocations(EventRepository eventRepo) {
-        Integer max1 = 0, max2 = 0, max3 = 0;
-        Location l1 = null, l2 = null, l3 = null;
-        for (int i=0; i<storage.length; i++) {
-            if (storage[i] != null) {
-                Integer nr = eventRepo.getNumberOfEventsFromLocation(storage[i].getId());
-                System.out.println("nr: " + nr);
-                if (nr > max1) {
-                    if (max1 > max2) {
-                        if (max2 > max3) {
-                            max3 = max2;
-                            l3 = l2;
-                        }
-                        max2 = max1;
-                        l2 = l1;
-                    }
-                    max1 = nr;
-                    l1 = storage[i];
-                } else if (nr > max2) {
-                    if (max2 > max3) {
-                        max3 = max2;
-                        l3 = l2;
-                    }
-                    max2 = nr;
-                    l2 = storage[i];
-                } else if (nr > max3) {
-                    max3 = nr;
-                    l3 = storage[i];
-                }
-            }
-        }
-        ArrayList<Location> res = new ArrayList<>();
-        res.add(l1);
-        res.add(l2);
-        res.add(l3);
-        return res;
-    }
+//    public ArrayList<Location> mostFrequentLocations(EventRepository eventRepo) {
+//        Integer max1 = 0, max2 = 0, max3 = 0;
+//        Location l1 = null, l2 = null, l3 = null;
+//        for (int i=0; i<storage.length; i++) {
+//            if (storage[i] != null) {
+//                Integer nr = eventRepo.getNumberOfEventsFromLocation(storage[i].getId());
+//                System.out.println("nr: " + nr);
+//                if (nr > max1) {
+//                    if (max1 > max2) {
+//                        if (max2 > max3) {
+//                            max3 = max2;
+//                            l3 = l2;
+//                        }
+//                        max2 = max1;
+//                        l2 = l1;
+//                    }
+//                    max1 = nr;
+//                    l1 = storage[i];
+//                } else if (nr > max2) {
+//                    if (max2 > max3) {
+//                        max3 = max2;
+//                        l3 = l2;
+//                    }
+//                    max2 = nr;
+//                    l2 = storage[i];
+//                } else if (nr > max3) {
+//                    max3 = nr;
+//                    l3 = storage[i];
+//                }
+//            }
+//        }
+//        ArrayList<Location> res = new ArrayList<>();
+//        res.add(l1);
+//        res.add(l2);
+//        res.add(l3);
+//        return res;
+//    }
 }

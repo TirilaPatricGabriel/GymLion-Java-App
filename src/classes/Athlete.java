@@ -54,10 +54,13 @@ public class Athlete extends Person {
     public String toString() {
         return "Athlete{" +
                 "name='" + getName() + '\'' +
+                ", email='" + super.getEmail() + '\'' +
+                ", phone='" + super.getPhone() + '\'' +
+                ", address='" + super.getAddress() + '\'' +
                 ", age=" + getAge() +
-                ", salary=" + salary +
-                ", socialMediaFollowers=" + socialMediaFollowers +
-                ", bonusPerTenThousandLikes=" + bonusPerTenThousandLikes +
+                ", salary=" + getSalary() +
+                ", socialMediaFollowers=" + getSocialMediaFollowers() +
+                ", bonusPerTenThousandLikes=" + getBonusPerTenThousandLikes() +
                 '}';
     }
 

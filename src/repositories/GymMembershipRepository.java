@@ -6,9 +6,11 @@ import config.DatabaseConfiguration;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class GymMembershipRepository implements GenericRepository<GymMembership> {
 
+    private static Scanner scanner = new Scanner(System.in);
     @Override
     public void add(GymMembership entity) {
         String sql = "CALL INSERT_GYM_MEMBERSHIP(?, ?, ?, ?, ?)";
@@ -56,12 +58,22 @@ public class GymMembershipRepository implements GenericRepository<GymMembership>
     public void update(GymMembership entity) {
         String sql = "UPDATE gym_memberships gm JOIN products p ON gm.productId = p.productId " +
                 "SET gm.gymId = ?, gm.durationInMonths = ?, p.price = ?, p.code = ? WHERE gm.membershipId = ?";
+
+        System.out.println("Enter new gym ID:");
+        int gymId = Integer.parseInt(scanner.nextLine());
+        System.out.println("Enter new price:");
+        double price = Double.parseDouble(scanner.nextLine());
+        System.out.println("Enter new duration in months:");
+        int duration = Integer.parseInt(scanner.nextLine());
+        System.out.println("Enter new code:");
+        String code = scanner.nextLine();
+
         try (Connection connection = DatabaseConfiguration.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, entity.getGymId());
-            stmt.setInt(2, entity.getDurationInMonths());
-            stmt.setDouble(3, entity.getPrice());
-            stmt.setString(4, entity.getCode());
+            stmt.setInt(1, gymId);
+            stmt.setInt(2, duration);
+            stmt.setDouble(3, price);
+            stmt.setString(4, code);
             stmt.setInt(5, entity.getId());
             stmt.executeUpdate();
         } catch (SQLException e) {

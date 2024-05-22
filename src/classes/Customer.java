@@ -43,7 +43,7 @@ public class Customer extends Person {
         return "Customer{" +
                 "name='" + getName() + '\'' +
                 ", age=" + getAge() +
-                ", balance=" + balance +
+                ", balance=" + getBalance() +
                 '}';
     }
 }

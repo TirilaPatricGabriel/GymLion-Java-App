@@ -5,11 +5,9 @@ import classes.Location;
 import config.DatabaseConfiguration;
 
 import java.sql.*;
-import java.util.Arrays;
-import java.util.ArrayList;
+import java.sql.Date;
+import java.util.*;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Objects;
 
 
 /**
@@ -18,6 +16,7 @@ import java.util.Objects;
  * */
 public class EventRepository implements GenericRepository<Event> {
 
+    private static Scanner scanner = new Scanner(System.in);
     private Event[] storage = new Event[100];
 
 
@@ -27,8 +26,8 @@ public class EventRepository implements GenericRepository<Event> {
         try (Connection connection = DatabaseConfiguration.getConnection();
              CallableStatement stmt = connection.prepareCall(sql)) {
             stmt.registerOutParameter(1, Types.INTEGER);
-            stmt.setDate(2, entity.getStartDate());
-            stmt.setDate(3, entity.getEndDate());
+            stmt.setDate(2, Date.valueOf(entity.getStartDate()));
+            stmt.setDate(3, Date.valueOf(entity.getEndDate()));
             stmt.setString(4, entity.getName());
             stmt.setString(5, entity.getDescription());
             stmt.setInt(6, entity.getCapacity());
@@ -71,15 +70,28 @@ public class EventRepository implements GenericRepository<Event> {
     public void update(Event entity) {
         String updateEventSql = "UPDATE events SET startDate = ?, endDate = ?, name = ?, description = ?, capacity = ?, locationId = ? WHERE locationId = ?";
 
+        System.out.println("Start date:");
+        Date startDate = Date.valueOf(scanner.nextLine());
+        System.out.println("End date:");
+        Date endDate = Date.valueOf(scanner.nextLine());
+        System.out.println("Name:");
+        String name = scanner.nextLine();
+        System.out.println("Description:");
+        String description = scanner.nextLine();
+        System.out.println("Capacity:");
+        Integer capacity = Integer.parseInt(scanner.nextLine());
+        System.out.println("Location ID:");
+        Integer locationId = Integer.parseInt(scanner.nextLine());
+
         try (Connection connection = DatabaseConfiguration.getConnection();
              PreparedStatement eventQuery = connection.prepareStatement(updateEventSql)) {
 
-            eventQuery.setDate(1, entity.getStartDate());
-            eventQuery.setDate(2, entity.getEndDate());
-            eventQuery.setString(3, entity.getName());
-            eventQuery.setString(4, entity.getDescription());
-            eventQuery.setInt(5, entity.getCapacity());
-            eventQuery.setInt(6, entity.getLocationId());
+            eventQuery.setDate(1, startDate);
+            eventQuery.setDate(2, endDate);
+            eventQuery.setString(3, name);
+            eventQuery.setString(4, description);
+            eventQuery.setInt(5, capacity);
+            eventQuery.setInt(6, locationId);
             eventQuery.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

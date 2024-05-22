@@ -7,6 +7,7 @@ import config.DatabaseConfiguration;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -16,18 +17,21 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class CustomerRepository implements GenericRepository<Customer> {
 
     private Customer[] storage = new Customer[10];
+    private static Scanner scanner = new Scanner(System.in);
 
     @Override
     public void add(Customer entity) {
-        String sql = "CALL INSERT_CUSTOMER(?, ?, ?, ?)";
+        String sql = "CALL INSERT_CUSTOMER(?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection connection = DatabaseConfiguration.getConnection();
              CallableStatement stmt = connection.prepareCall(sql)) {
             stmt.registerOutParameter(1, Types.INTEGER);
-            stmt.setInt(2, entity.getAge());
-            stmt.setString(3, entity.getName());
-            stmt.setDouble(4, entity.getAge());
-            stmt.setDouble(5, entity.getBalance());
+            stmt.setString(2, entity.getName());
+            stmt.setString(3, entity.getEmail());
+            stmt.setString(4, entity.getPhone());
+            stmt.setString(5, entity.getAddress());
+            stmt.setDouble(6, entity.getAge());
+            stmt.setDouble(7, entity.getBalance());
             stmt.execute();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -56,7 +60,7 @@ public class CustomerRepository implements GenericRepository<Customer> {
                     if (persons.next()) {
                         String name = persons.getString("name");
                         int age = persons.getInt("age");
-                        String email = persons.getString("emal");
+                        String email = persons.getString("email");
                         String phone = persons.getString("phone");
                         String address = persons.getString("address");
 
@@ -73,19 +77,35 @@ public class CustomerRepository implements GenericRepository<Customer> {
 
     @Override
     public void update(Customer entity) {
-        String updatePersonSql = "UPDATE persons SET name = ?, age = ? WHERE id = ?";
+        String updatePersonSql = "UPDATE persons SET name = ?, email = ?, phone = ?, address = ?, age = ? WHERE id = ?";
         String updateCustomerSql = "UPDATE customers SET balance = ? WHERE customerId = ?";
+
+        System.out.println("New name:");
+        String name = scanner.nextLine();
+        System.out.println("New email:");
+        String  email = scanner.nextLine();
+        System.out.println("New phone:");
+        String  phone = scanner.nextLine();
+        System.out.println("New address:");
+        String  address = scanner.nextLine();
+        System.out.println("New age:");
+        Integer age = Integer.parseInt(scanner.nextLine());
+        System.out.println("New balance:");
+        Integer balance = Integer.parseInt(scanner.nextLine());
 
         try (Connection connection = DatabaseConfiguration.getConnection();
              PreparedStatement personQuery = connection.prepareStatement(updatePersonSql);
              PreparedStatement customerQuery = connection.prepareStatement(updateCustomerSql)) {
 
-            personQuery.setString(1, entity.getName());
-            personQuery.setInt(2, entity.getAge());
-            personQuery.setInt(3, entity.getId());
+            personQuery.setString(1, name);
+            personQuery.setString(2, email);
+            personQuery.setString(3, phone);
+            personQuery.setString(4, address);
+            personQuery.setInt(5, age);
+            personQuery.setInt(6, entity.getId());
             personQuery.executeUpdate();
 
-            customerQuery.setDouble(1, entity.getBalance());
+            customerQuery.setDouble(1, balance);
             customerQuery.setInt(2, entity.getId());
             customerQuery.executeUpdate();
         } catch (SQLException e) {

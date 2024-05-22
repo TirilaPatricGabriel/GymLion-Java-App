@@ -40,26 +40,12 @@ public class GymService {
         return gymRepo.get(index);
     }
 
-    public void update(int index, String name, String description, Integer capacity, Integer locationId) throws InvalidDataException {
+    public void update(int index) throws InvalidDataException {
         if (index <= 0) {
             throw new InvalidDataException("Index can't be lower than or equal to 0");
         }
         Gym gym = gymRepo.get(index);
-        if (gym == null) {
-            throw new InvalidDataException("Gym not found");
-        }
-        if (name != null && !name.trim().isEmpty()) {
-            gym.setName(name);
-        }
-        if (description != null && !description.trim().isEmpty()) {
-            gym.setDescription(description);
-        }
-        if (capacity != null && capacity > 0) {
-            gym.setCapacity(capacity);
-        }
-        if (locationId != null && locationId > 0) {
-            gym.setLocationId(locationId);
-        }
+
         gymRepo.update(gym);
     }
 
