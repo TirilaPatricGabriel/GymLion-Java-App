@@ -1,5 +1,6 @@
 package repositories;
 
+import classes.GymMembership;
 import classes.Product;
 import config.DatabaseConfiguration;
 
@@ -13,7 +14,7 @@ public class ProductRepository {
     private static Scanner scanner = new Scanner(System.in);
 
     public void add(Product product) throws SQLException {
-        String sql = "CALL INSERT_PRODUCT(?, ?)";
+        String sql = "CALL INSERT_PRODUCT(?, ?, ?)";
         try (Connection connection = DatabaseConfiguration.getConnection();
              CallableStatement stmt = connection.prepareCall(sql)) {
             stmt.registerOutParameter(1, Types.INTEGER);
@@ -64,14 +65,42 @@ public class ProductRepository {
         }
     }
 
+//    public List<Product> getAll() throws SQLException {
+//        String sql = "SELECT * FROM products";
+//        List<Product> products = new ArrayList<>();
+//        try (Connection connection = DatabaseConfiguration.getConnection();
+//             PreparedStatement stmt = connection.prepareStatement(sql)) {
+//            ResultSet rs = stmt.executeQuery();
+//            while (rs.next()) {
+//                products.add(new Product(rs.getDouble("price"), rs.getString("code")));
+//            }
+//        }
+//        return products;
+//    }
+
     public List<Product> getAll() throws SQLException {
-        String sql = "SELECT * FROM products";
+        String sql = "SELECT p.*, gm.gymId, gm.durationInMonths " +
+                "FROM products p LEFT JOIN gym_memberships gm ON p.productId = gm.productId";
         List<Product> products = new ArrayList<>();
         try (Connection connection = DatabaseConfiguration.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                products.add(new Product(rs.getDouble("price"), rs.getString("code")));
+                double price = rs.getDouble("price");
+                String code = rs.getString("code");
+                int productId = rs.getInt("productId");
+
+                if (rs.getObject("gymId") != null) {
+                    int gymId = rs.getInt("gymId");
+                    int durationInMonths = rs.getInt("durationInMonths");
+                    GymMembership membership = new GymMembership(gymId, price, durationInMonths, code);
+                    membership.setId(productId);
+                    products.add(membership);
+                } else {
+                    Product product = new Product(price, code);
+                    product.setId(productId);
+                    products.add(product);
+                }
             }
         }
         return products;

@@ -1,6 +1,7 @@
 package repositories;
 
 import classes.ChallengeCustomer;
+import classes.FitnessChallenge;
 import config.DatabaseConfiguration;
 
 import java.sql.*;
@@ -19,18 +20,29 @@ public class ChallengeCustomerRepository {
         }
     }
 
-    public List<ChallengeCustomer> getChallengesByCustomerId(int customerId) throws SQLException {
-        String sql = "SELECT * FROM customer_fitness_challenges WHERE customerId = ?";
-        List<ChallengeCustomer> challengeCustomers = new ArrayList<>();
+    public List<FitnessChallenge> getChallengesByCustomerId(int customerId) throws SQLException {
+        String sql = "SELECT c.id, c.name, c.description " +
+                "FROM challenge_customers cc " +
+                "JOIN challenges c ON cc.challengeId = c.id " +
+                "WHERE cc.customerId = ?";
+        List<FitnessChallenge> challenges = new ArrayList<>();
         try (Connection connection = DatabaseConfiguration.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
+
             stmt.setInt(1, customerId);
             ResultSet rs = stmt.executeQuery();
+
             while (rs.next()) {
-                challengeCustomers.add(new ChallengeCustomer(rs.getInt("challengeId"), rs.getInt("customerId")));
+                int id = rs.getInt("id");
+                String name = rs.getString("name");
+                String description = rs.getString("description");
+                Integer points = rs.getInt("points");
+
+                FitnessChallenge challenge = new FitnessChallenge(name, description, points);
+                challenges.add(challenge);
             }
         }
-        return challengeCustomers;
+        return challenges;
     }
 
     public List<ChallengeCustomer> getCustomersByChallengeId(int challengeId) throws SQLException {

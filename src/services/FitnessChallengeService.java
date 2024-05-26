@@ -9,8 +9,10 @@ import repositories.CustomerRepository;
 import repositories.FitnessChallengeRepository;
 import repositories.GymRepository;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
 public class FitnessChallengeService {
 
@@ -48,6 +50,12 @@ public class FitnessChallengeService {
         FitnessChallenge chall = challengesRepo.get(index);
         challengesRepo.delete(chall);
     }
+
+    public List<FitnessChallenge> getAllChallenges() throws SQLException {
+        return challengesRepo.getAllChallenges();
+    }
+
+
 
 //    public ArrayList<Integer> getAllCustomersThatCompletedChallenge (CustomerRepository customerRepo, String challengeName) throws InvalidDataException {
 //        if (challengeName == null || challengeName == "") {

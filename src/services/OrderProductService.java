@@ -1,6 +1,7 @@
 package services;
 
 import classes.OrderProduct;
+import classes.Product;
 import repositories.OrderProductRepository;
 
 import java.sql.SQLException;
@@ -19,7 +20,7 @@ public class OrderProductService {
         orderProductRepository.addOrderProduct(orderProduct);
     }
 
-    public List<OrderProduct> getProductsByOrderId(int orderId) throws SQLException {
+    public List<Product> getProductsByOrderId(int orderId) throws SQLException {
         return orderProductRepository.getProductsByOrderId(orderId);
     }
 

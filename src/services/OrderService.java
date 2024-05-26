@@ -13,7 +13,7 @@ public class OrderService {
         this.orderRepo = orderRepository;
     }
 
-    public void registerNewEntity(int customerId, LocalDate date, double price) throws InvalidDataException {
+    public Integer registerNewEntity(int customerId, LocalDate date, double price) throws InvalidDataException {
         if (customerId <= 0) {
             throw new InvalidDataException("Invalid customer ID");
         }
@@ -25,6 +25,8 @@ public class OrderService {
         }
         Order entity = new Order(customerId, date, price);
         orderRepo.add(entity);
+
+        return entity.getId();
     }
 
     public Order get(int index) throws InvalidDataException {

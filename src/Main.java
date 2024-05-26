@@ -36,7 +36,9 @@ public class Main {
     private static LocationService locationService = new LocationService(new LocationRepository());
     private static EventService eventService = new EventService(new EventRepository());
     private static ProductService productService = new ProductService(new ProductRepository());
-
+    private static CustomerMembershipService cmService = new CustomerMembershipService(new CustomerMembershipRepository());
+    private static OrderProductService opService = new OrderProductService(new OrderProductRepository());
+    private static ChallengeCustomerService ccService = new ChallengeCustomerService(new ChallengeCustomerRepository());
     public static void main(String[] args) {
         while (true) {
             System.out.println("Select a class:");
@@ -60,16 +62,15 @@ public class Main {
             }
 
             System.out.println("Select an operation:");
+            int operationChoice = 1;
             if (classChoice < 10) {
                 System.out.println("1. Create");
                 System.out.println("2. Read");
                 System.out.println("3. Update");
                 System.out.println("4. Delete");
-            } else {
-
+                operationChoice = Integer.parseInt(scanner.nextLine());
             }
 
-            int operationChoice = Integer.parseInt(scanner.nextLine());
 
             try {
                 switch (classChoice) {
@@ -100,6 +101,10 @@ public class Main {
                     case 9:
                         handleProductOperations(operationChoice);
                         break;
+                    case 10:
+                        handleOrder();
+                    case 11:
+                        completeChallenge();
                     default:
                         System.out.println("Invalid class choice.");
                 }
@@ -424,7 +429,110 @@ public class Main {
                 System.out.println("Invalid operation choice.");
         }
     }
+
+    private static void handleOrder() throws InvalidDataException, SQLException {
+        System.out.println("We will be creating an order!");
+        System.out.println("First, we need to know the id of the customer:");
+        int customerId = Integer.parseInt(scanner.nextLine());
+        System.out.println("Now, we'd like you to select a few products:");
+
+        try {
+            List<Product> products = productService.getAllProducts();
+            List<Integer> selectedProductsIds = new ArrayList<>();
+            double totalPrice = 0;
+            for (Product product : products) {
+                boolean is_membership = false;
+
+                if (product instanceof GymMembership) {
+                    GymMembership gymMembership = (GymMembership) product;
+                    System.out.println(gymMembership);
+                    is_membership = true;
+                } else {
+                    System.out.println(product);
+                }
+
+                System.out.println("Do you wish to buy this product? 1 for yes and 0 for no:");
+                int choice = Integer.parseInt(scanner.nextLine());
+
+                if (choice == 1) {
+                    selectedProductsIds.add(product.getId());
+                    totalPrice += product.getPrice();
+                    if (is_membership) {
+                        cmService.addCustomerMembership(product.getId(), customerId);
+                    }
+                }
+            }
+
+            int idOfNewOrder = orderService.registerNewEntity(customerId, LocalDate.now(), totalPrice);
+            for (int id : selectedProductsIds) {
+                opService.addOrderProduct( idOfNewOrder, id );
+            }
+
+            System.out.println("A new order has been created with your products, here are the details:");
+            System.out.println("Total price:" + totalPrice);
+
+            Order newOrder = orderService.get(idOfNewOrder);
+            Customer customer = customerService.get(newOrder.getCustomerId());
+
+            System.out.println("Customer:" + customer.getName() + ", " + customer.getEmail() + ", " + customer.getAddress());
+
+            List<Product> boughtProducts = opService.getProductsByOrderId(idOfNewOrder);
+
+            for (Product product : boughtProducts) {
+                System.out.println("Product name:" + product.getCode());
+                System.out.println("Product price:" + product.getPrice());
+            }
+
+            System.out.println("Write anything to continue");
+            String x = scanner.nextLine();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void completeChallenge() throws InvalidDataException, SQLException {
+        System.out.println("We will be completing achallenge!");
+        System.out.println("First, we need to know the id of the customer:");
+        int customerId = Integer.parseInt(scanner.nextLine());
+        System.out.println("Now, we'd like you to select the challenge:");
+
+        try {
+            List<FitnessChallenge> challenges = fitnessChallengeService.getAllChallenges();
+            List<Integer> selectedChallengeIds = new ArrayList<>();
+            double totalPoints = 0;
+            for (FitnessChallenge challenge : challenges) {
+                System.out.println(challenge);
+
+                System.out.println("Do you wish to complete this challenge?");
+                int choice = Integer.parseInt(scanner.nextLine());
+
+                if (choice == 1) {
+                    selectedChallengeIds.add(challenge.getId());
+                    totalPoints += challenge.getPoints();
+                }
+            }
+
+            for (int id : selectedChallengeIds) {
+                ccService.addChallengeCustomer(id, customerId);
+            }
+
+            System.out.println("The challenges have been added. Here are the challenges this customer has completed:");
+
+            List<FitnessChallenge> completedChallenges = ccService.getChallengesByCustomerId(customerId);
+
+            for (FitnessChallenge challenge : completedChallenges) {
+                System.out.println(challenge);
+            }
+
+            System.out.println("Write anything to continue");
+            String x = scanner.nextLine();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }
+
+
 
 //public class Main {
 //    private static Scanner scanner = new Scanner(System.in);

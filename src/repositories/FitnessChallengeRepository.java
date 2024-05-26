@@ -141,22 +141,23 @@ public class FitnessChallengeRepository implements GenericRepository<FitnessChal
         }
     }
 
-    private List<FitnessChallenge> getAllChallenges() {
+    public List<FitnessChallenge> getAllChallenges() throws SQLException {
+        String sql = "SELECT id, name, description FROM challenges";
         List<FitnessChallenge> challenges = new ArrayList<>();
-        String sql = "SELECT * FROM fitness_challenges";
         try (Connection connection = DatabaseConfiguration.getConnection();
-             PreparedStatement stmt = connection.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+
+            ResultSet rs = stmt.executeQuery();
+
             while (rs.next()) {
+                int id = rs.getInt("id");
                 String name = rs.getString("name");
                 String description = rs.getString("description");
-                int points = rs.getInt("points");
+                Integer points = rs.getInt("points");
+
                 FitnessChallenge challenge = new FitnessChallenge(name, description, points);
-                challenge.setId(rs.getInt("challengeId"));
                 challenges.add(challenge);
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
         return challenges;
     }
