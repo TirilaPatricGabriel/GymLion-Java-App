@@ -2,15 +2,29 @@ package services;
 
 import classes.Athlete;
 import classes.Customer;
+import repositories.AthleteRepository;
 import repositories.PersonRepository;
 import classes.Person;
 import exceptions.InvalidDataException;
 
+import java.util.List;
+
 public class PersonService {
     private PersonRepository personRepository = new PersonRepository();
 
-    public PersonService(PersonRepository repo) {
+    private static PersonService instance;
+    private AuditService auditService;
+
+    private PersonService(PersonRepository repo) {
         this.personRepository = repo;
+        this.auditService = AuditService.getInstance();
+    }
+
+    public static PersonService getInstance(PersonRepository repo) {
+        if (instance == null) {
+            instance = new PersonService(repo);
+        }
+        return instance;
     }
 
     public void registerNewEntity(String name, String email, String phone, String address, int age, double salary, int socialMediaFollowers, double bonusPerTenThousandLikes) throws InvalidDataException {
@@ -74,19 +88,7 @@ public class PersonService {
         personRepository.delete(pers);
     }
 
-    public void showCustomersWithBalanceOverThreshold(double threshold) throws InvalidDataException {
-        if (threshold < 0){
-            throw new InvalidDataException("Threshold can't be lower than 0");
-        }
-
-        personRepository.showCustomersWithBalanceOverThreshold(threshold);
-    }
-
-    public void increaseSalaryOfPopularAthletes() {
-        personRepository.increaseSalaryOfPopularAthletes();
-    }
-
-    public void showPeopleSortedByAge(){
-        personRepository.showPeopleSortedByAge();
+    public List<Person> showPeopleSortedByAge(){
+        return personRepository.showPeopleSortedByAge();
     }
 }

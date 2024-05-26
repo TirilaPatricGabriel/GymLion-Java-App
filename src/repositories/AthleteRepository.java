@@ -64,20 +64,20 @@ public class AthleteRepository implements GenericRepository<Athlete> {
                     ResultSet personRs = personStmt.executeQuery();
 
                     if (personRs.next()) {
+                        Integer athleteId = personRs.getInt("id");
                         String name = personRs.getString("name");
                         int age = personRs.getInt("age");
                         String email = personRs.getString("email");
                         String phone = personRs.getString("phone");
                         String address = personRs.getString("address");
 
-                        athlete = new Athlete(name, email, phone, address, age, salary, socialMediaFollowers, bonusPerTenThousandLikes);
+                        athlete = new Athlete(athleteId, name, email, phone, address, age, salary, socialMediaFollowers, bonusPerTenThousandLikes);
                     }
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return athlete;
     }
 
@@ -121,34 +121,42 @@ public class AthleteRepository implements GenericRepository<Athlete> {
             athleteStmt.setInt(4, entity.getId());
             athleteStmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
     @Override
     public void delete(Athlete entity) {
+        String deleteCompetitionAthletesSql = "DELETE FROM competition_athletes WHERE athleteId = ?";
         String deleteAthleteSql = "DELETE FROM athletes WHERE athleteId = ?";
-        String deletePersonSql = "DELETE FROM persons WHERE id = ?";
 
         try (Connection connection = DatabaseConfiguration.getConnection();
-             PreparedStatement athleteStmt = connection.prepareStatement(deleteAthleteSql);
-             PreparedStatement personStmt = connection.prepareStatement(deletePersonSql)) {
+             PreparedStatement competitionAthleteStmt = connection.prepareStatement(deleteCompetitionAthletesSql);
+             PreparedStatement athleteStmt = connection.prepareStatement(deleteAthleteSql)) {
 
-            // Delete from athletes table
+            // Start a transaction
+            connection.setAutoCommit(false);
+
+            // Delete from competition_athletes
+            competitionAthleteStmt.setInt(1, entity.getId());
+            competitionAthleteStmt.executeUpdate();
+
+            // Delete from athletes
             athleteStmt.setInt(1, entity.getId());
             athleteStmt.executeUpdate();
 
-            // Delete from persons table
-            personStmt.setInt(1, entity.getId());
-            personStmt.executeUpdate();
+            // Commit transaction
+            connection.commit();
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
+
     public List<Athlete> getExpensiveAthletes(double percentage) {
         List<Athlete> expensiveAthletes = new ArrayList<>();
-        String sql = "SELECT a.*, p.name, p.age, p.email, p.phone, p.address, FROM athletes a JOIN persons p ON a.athleteId = p.id WHERE (a.socialMediaFollowers * ?) < a.salary";
+        String sql = "SELECT a.*, p.name, p.age, p.email, p.phone, p.address FROM athletes a JOIN persons p ON a.athleteId = p.id WHERE (a.salary * (? / 100)) > a.socialMediaFollowers";
 
         try (Connection connection = DatabaseConfiguration.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -176,57 +184,24 @@ public class AthleteRepository implements GenericRepository<Athlete> {
         return expensiveAthletes;
     }
 
+    public void increaseSalaryOfPopularAthletes(Integer followers, Double percentage) {
+        String updateAthletesSql = "UPDATE athletes SET salary = salary + (salary * ? / 100) WHERE socialMediaFollowers > ?";
 
+        try (Connection connection = DatabaseConfiguration.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(updateAthletesSql)) {
 
+            stmt.setDouble(1, percentage);
+            stmt.setInt(2, followers);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            int rowsUpdated = stmt.executeUpdate();
+            System.out.println("Number of salaries updated: " + rowsUpdated);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Override
     public int getSize() {
         return storage.length;
     }
-
-//    public void deleteExpensiveAthletes (Integer percent) {
-//        for (int i=0; i<storage.length; i++) {
-//            if (storage[i] != null && (storage[i].getSocialMediaFollowers() * ((double) percent / 100)) < storage[i].getSalary()) {
-//                System.out.println("percent: " + percent);
-//                storage[i] = null;
-//            }
-//        }
-//    }
 }

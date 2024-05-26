@@ -2,6 +2,7 @@ package services;
 
 import classes.OrderProduct;
 import classes.Product;
+import repositories.AthleteRepository;
 import repositories.OrderProductRepository;
 
 import java.sql.SQLException;
@@ -11,8 +12,19 @@ public class OrderProductService {
 
     private OrderProductRepository orderProductRepository;
 
-    public OrderProductService(OrderProductRepository repo) {
+    private static OrderProductService instance;
+    private AuditService auditService;
+
+    private OrderProductService(OrderProductRepository repo) {
         this.orderProductRepository = repo;
+        this.auditService = AuditService.getInstance();
+    }
+
+    public static OrderProductService getInstance(OrderProductRepository repo) {
+        if (instance == null) {
+            instance = new OrderProductService(repo);
+        }
+        return instance;
     }
 
     public void addOrderProduct(int orderId, int productId) throws SQLException {

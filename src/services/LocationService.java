@@ -4,18 +4,31 @@ import classes.Customer;
 import classes.Gym;
 import classes.Location;
 import exceptions.InvalidDataException;
+import repositories.AthleteRepository;
 import repositories.EventRepository;
 import repositories.GymRepository;
 import repositories.LocationRepository;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class LocationService {
 
-    private LocationRepository locationRepo = new LocationRepository();
+    private LocationRepository locationRepo;
 
-    public LocationService(LocationRepository repo) {
+    private static LocationService instance;
+    private AuditService auditService;
+
+    private LocationService(LocationRepository repo) {
         this.locationRepo = repo;
+        this.auditService = AuditService.getInstance();
+    }
+
+    public static LocationService getInstance(LocationRepository repo) {
+        if (instance == null) {
+            instance = new LocationService(repo);
+        }
+        return instance;
     }
 
     public void registerNewEntity(String countryName, String cityName, double latitude, double longitude) throws InvalidDataException {
@@ -46,7 +59,9 @@ public class LocationService {
         locationRepo.delete(location);
     }
 
-//    public ArrayList<Location> mostFrequentLocations(EventRepository eventRepo) {
-//        return locationRepo.mostFrequentLocations(eventRepo);
-//    }
+    public List<Location> getMostFrequentEventLocations() {
+        auditService.logAction("Search for most frequent locations for events");
+        return locationRepo.getMostFrequentEventLocations();
+    }
+
 }

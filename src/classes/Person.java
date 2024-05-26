@@ -8,6 +8,15 @@ public class Person implements Comparable<Person>{
     private int age;
 
 
+    public Person(Integer id, String name, String email, String phone, String address, int age) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.address = address;
+        this.age = age;
+    }
+
     public Person(String name, String email, String phone, String address, int age) {
         this.id = count.incrementAndGet();
         this.name = name;
@@ -15,6 +24,10 @@ public class Person implements Comparable<Person>{
         this.phone = phone;
         this.address = address;
         this.age = age;
+    }
+
+    public Person() {
+        this.id = count.incrementAndGet();
     }
 
     public void displayInfo() {
@@ -71,8 +84,20 @@ public class Person implements Comparable<Person>{
         this.name = name;
     }
 
-    protected void setId(int id) {
+    public void setId(int id) {
         this.id = id;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
+    }
+
+    @Override
+    public String toString() {
+        return "Person{" +
+                "name='" + getName() + '\'' +
+                ", age=" + getAge() +
+                '}';
     }
 }
 

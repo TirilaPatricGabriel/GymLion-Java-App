@@ -12,15 +12,26 @@ import repositories.GymRepository;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class FitnessChallengeService {
 
-    private FitnessChallengeRepository challengesRepo = new FitnessChallengeRepository();
+    private FitnessChallengeRepository challengesRepo;
+    private static FitnessChallengeService instance;
+    private AuditService auditService;
 
-
-    public FitnessChallengeService(FitnessChallengeRepository repo) {
+    private FitnessChallengeService(FitnessChallengeRepository repo) {
         this.challengesRepo = repo;
+        this.auditService = AuditService.getInstance();
+    }
+
+    public static FitnessChallengeService getInstance(FitnessChallengeRepository repo) {
+        if (instance == null) {
+            instance = new FitnessChallengeService(repo);
+        }
+        return instance;
     }
 
     public void registerNewEntity(String name, String description, Integer points) throws InvalidDataException {
@@ -55,19 +66,26 @@ public class FitnessChallengeService {
         return challengesRepo.getAllChallenges();
     }
 
+    public void upgradeChallengeCompletedLessThanNTimes(Integer n, Integer points) throws InvalidDataException {
+        if (n < 0) {
+            throw new InvalidDataException("The number can't be lower than 0");
+        }
 
+        challengesRepo.upgradeChallenge(n, points);
+        auditService.logAction("Searched for challenges completed less than n times");
 
-//    public ArrayList<Integer> getAllCustomersThatCompletedChallenge (CustomerRepository customerRepo, String challengeName) throws InvalidDataException {
-//        if (challengeName == null || challengeName == "") {
-//            throw new InvalidDataException("The name of the challenge is wrong!");
-//        }
-//        return challengesRepo.getAllCustomersThatCompletedChallenge(customerRepo, challengeName);
-//    }
+    }
 
-//    public void upgradeChallenge(CustomerRepository customerRepo, Integer numberOfCompletions, Integer points) throws InvalidDataException {
-//        if (numberOfCompletions < 0) {
-//            throw new InvalidDataException("Number of completions field is wrong!");
-//        }
-//        challengesRepo.upgradeChallenge(customerRepo, numberOfCompletions, points);
-//    }
+    public List<FitnessChallenge> getAllChallengesSortedByPoints() {
+        auditService.logAction("Searched for challenges sorted by points");
+
+        try {
+            List<FitnessChallenge> challenges = challengesRepo.getAllChallenges();
+            challenges.sort(Comparator.comparingInt(FitnessChallenge::getPoints));
+            return challenges;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
 }

@@ -11,8 +11,19 @@ public class ChallengeCustomerService {
 
     private ChallengeCustomerRepository challengeCustomerRepository;
 
-    public ChallengeCustomerService(ChallengeCustomerRepository challengeCustomerRepository) {
-        this.challengeCustomerRepository = challengeCustomerRepository;
+    private static ChallengeCustomerService instance;
+    private AuditService auditService;
+
+    private ChallengeCustomerService(ChallengeCustomerRepository repo) {
+        this.challengeCustomerRepository = repo;
+        this.auditService = AuditService.getInstance();
+    }
+
+    public static ChallengeCustomerService getInstance(ChallengeCustomerRepository repo) {
+        if (instance == null) {
+            instance = new ChallengeCustomerService(repo);
+        }
+        return instance;
     }
 
     public void addChallengeCustomer(int challengeId, int customerId) throws SQLException {

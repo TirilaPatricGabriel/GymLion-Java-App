@@ -3,6 +3,7 @@ package services;
 import repositories.AthleteRepository;
 import classes.Athlete;
 import exceptions.InvalidDataException;
+import repositories.FitnessChallengeRepository;
 import repositories.GymRepository;
 
 
@@ -11,10 +12,21 @@ import java.util.List;
 
 public class AthleteService {
 
-    private AthleteRepository athleteRepository = new AthleteRepository();
+    private AthleteRepository athleteRepository;
 
-    public AthleteService(AthleteRepository repo) {
+    private static AthleteService instance;
+    private AuditService auditService;
+
+    private AthleteService(AthleteRepository repo) {
         this.athleteRepository = repo;
+        this.auditService = AuditService.getInstance();
+    }
+
+    public static AthleteService getInstance(AthleteRepository repo) {
+        if (instance == null) {
+            instance = new AthleteService(repo);
+        }
+        return instance;
     }
 
     public void registerNewEntity(String name, String email, String phone, String address, int age, double salary, int socialMediaFollowers, double bonusPerTenThousandLikes) throws InvalidDataException {
@@ -78,44 +90,28 @@ public class AthleteService {
         athleteRepository.delete(atl);
     }
 
-    public void deleteExpensiveAthletes(int percentage) {
+    public void deleteExpensiveAthletes(int percentage) throws InvalidDataException {
+        if (percentage < 0) {
+            throw new InvalidDataException("Percentage can't be lower than 0");
+        }
         List<Athlete> expensiveAthletes = athleteRepository.getExpensiveAthletes(percentage);
         for (Athlete athlete : expensiveAthletes) {
             Athlete atl = athleteRepository.get(athlete.getId());
             athleteRepository.delete(atl);
         }
+        auditService.logAction("Deleted expensive athletes");
+    }
+
+    public void increaseSalaryOfPopularAthletes(Integer followers, Double percentage) throws InvalidDataException {
+        if (followers < 0) {
+            throw new InvalidDataException("Folowers can't be lower than 0");
+        }
+        if (percentage < 0) {
+            throw new InvalidDataException("Percentage can't be lower than 0");
+        }
+        athleteRepository.increaseSalaryOfPopularAthletes(followers, percentage);
+        auditService.logAction("Updated salary of popular athletes");
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//    public void deleteExpensiveAthletes (Integer percent) throws InvalidDataException {
-//        if (percent <= 0) {
-//            throw new InvalidDataException("Invalid dates");
-//        }
-//        athleteRepository.deleteExpensiveAthletes(percent);
-//    }
 }

@@ -8,6 +8,13 @@ public class Product {
     private double price;
     private String code;
 
+    public Product(Integer id, double price, String code) {
+        this.id = id;
+        this.price = price;
+        this.code = code;
+    }
+
+
     public Product(double price, String code) {
         this.id = count.incrementAndGet();
         this.price = price;

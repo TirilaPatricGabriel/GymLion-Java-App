@@ -1,6 +1,7 @@
 package services;
 
 import classes.CustomerMembership;
+import repositories.AthleteRepository;
 import repositories.CustomerMembershipRepository;
 
 import java.sql.SQLException;
@@ -10,10 +11,20 @@ public class CustomerMembershipService {
 
     private CustomerMembershipRepository customerMembershipRepository;
 
-    public CustomerMembershipService(CustomerMembershipRepository customerMembershipRepository) {
-        this.customerMembershipRepository = customerMembershipRepository;
+    private static CustomerMembershipService instance;
+    private AuditService auditService;
+
+    private CustomerMembershipService(CustomerMembershipRepository repo) {
+        this.customerMembershipRepository = repo;
+        this.auditService = AuditService.getInstance();
     }
 
+    public static CustomerMembershipService getInstance(CustomerMembershipRepository repo) {
+        if (instance == null) {
+            instance = new CustomerMembershipService(repo);
+        }
+        return instance;
+    }
     public void addCustomerMembership(int membershipId, int customerId) throws SQLException {
         CustomerMembership customerMembership = new CustomerMembership(membershipId, customerId);
         customerMembershipRepository.addCustomerMembership(customerMembership);

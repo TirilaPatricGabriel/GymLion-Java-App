@@ -8,12 +8,24 @@ public class Gym {
     private Integer capacity;
     private Integer locationId;
 
+    public Gym(Integer id, String name, String description, Integer capacity, Integer locationId) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.capacity = capacity;
+        this.locationId = locationId;
+    }
+
     public Gym(String name, String description, Integer capacity, Integer locationId) {
         this.id = count.incrementAndGet();
         this.name = name;
         this.description = description;
         this.capacity = capacity;
         this.locationId = locationId;
+    }
+
+    public Gym() {
+        this.id = count.incrementAndGet();
     }
 
     public int getId() {

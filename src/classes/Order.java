@@ -8,6 +8,13 @@ public class Order {
     private LocalDate date;
     private double price;
 
+    public Order(int id, int customerId, LocalDate date, double price) {
+        this.id = id;
+        this.customerId = customerId;
+        this.date = date;
+        this.price = price;
+    }
+
     public Order(int customerId, LocalDate date, double price) {
         this.customerId = customerId;
         this.date = date;

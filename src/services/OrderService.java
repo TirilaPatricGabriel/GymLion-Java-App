@@ -2,6 +2,7 @@ package services;
 
 import classes.Order;
 import exceptions.InvalidDataException;
+import repositories.AthleteRepository;
 import repositories.OrderRepository;
 
 import java.time.LocalDate;
@@ -9,8 +10,19 @@ import java.time.LocalDate;
 public class OrderService {
     private OrderRepository orderRepo;
 
-    public OrderService(OrderRepository orderRepository) {
-        this.orderRepo = orderRepository;
+    private static OrderService instance;
+    private AuditService auditService;
+
+    private OrderService(OrderRepository repo) {
+        this.orderRepo = repo;
+        this.auditService = AuditService.getInstance();
+    }
+
+    public static OrderService getInstance(OrderRepository repo) {
+        if (instance == null) {
+            instance = new OrderService(repo);
+        }
+        return instance;
     }
 
     public Integer registerNewEntity(int customerId, LocalDate date, double price) throws InvalidDataException {

@@ -33,7 +33,7 @@ public class ProductRepository {
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                return new Product(rs.getDouble("price"), rs.getString("code"));
+                return new Product(rs.getInt("productId"), rs.getDouble("price"), rs.getString("code"));
             }
         }
         return null;
@@ -57,26 +57,17 @@ public class ProductRepository {
     }
 
     public void delete(int id) throws SQLException {
+        String membershipSql = "DELETE FROM gym_memberships WHERE productId = ?";
         String sql = "DELETE FROM products WHERE productId = ?";
         try (Connection connection = DatabaseConfiguration.getConnection();
+             PreparedStatement membershipStmt = connection.prepareStatement(membershipSql);
              PreparedStatement stmt = connection.prepareStatement(sql)) {
+            membershipStmt.setInt(1, id);
             stmt.setInt(1, id);
+            membershipStmt.execute();
             stmt.executeUpdate();
         }
     }
-
-//    public List<Product> getAll() throws SQLException {
-//        String sql = "SELECT * FROM products";
-//        List<Product> products = new ArrayList<>();
-//        try (Connection connection = DatabaseConfiguration.getConnection();
-//             PreparedStatement stmt = connection.prepareStatement(sql)) {
-//            ResultSet rs = stmt.executeQuery();
-//            while (rs.next()) {
-//                products.add(new Product(rs.getDouble("price"), rs.getString("code")));
-//            }
-//        }
-//        return products;
-//    }
 
     public List<Product> getAll() throws SQLException {
         String sql = "SELECT p.*, gm.gymId, gm.durationInMonths " +

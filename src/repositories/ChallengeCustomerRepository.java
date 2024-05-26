@@ -21,9 +21,9 @@ public class ChallengeCustomerRepository {
     }
 
     public List<FitnessChallenge> getChallengesByCustomerId(int customerId) throws SQLException {
-        String sql = "SELECT c.id, c.name, c.description " +
-                "FROM challenge_customers cc " +
-                "JOIN challenges c ON cc.challengeId = c.id " +
+        String sql = "SELECT c.challengeId, c.name, c.description, c.points " +
+                "FROM customer_fitness_challenges cc " +
+                "JOIN fitness_challenges c ON cc.challengeId = c.challengeId " +
                 "WHERE cc.customerId = ?";
         List<FitnessChallenge> challenges = new ArrayList<>();
         try (Connection connection = DatabaseConfiguration.getConnection();
@@ -33,7 +33,7 @@ public class ChallengeCustomerRepository {
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                int id = rs.getInt("id");
+                int id = rs.getInt("challengeId");
                 String name = rs.getString("name");
                 String description = rs.getString("description");
                 Integer points = rs.getInt("points");

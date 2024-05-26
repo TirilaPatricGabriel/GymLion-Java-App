@@ -2,6 +2,7 @@ package services;
 
 import classes.Product;
 import exceptions.InvalidDataException;
+import repositories.AthleteRepository;
 import repositories.ProductRepository;
 
 import java.sql.SQLException;
@@ -11,8 +12,19 @@ public class ProductService {
 
     private ProductRepository productRepository;
 
-    public ProductService(ProductRepository productRepository) {
-        this.productRepository = productRepository;
+    private static ProductService instance;
+    private AuditService auditService;
+
+    private ProductService(ProductRepository repo) {
+        this.productRepository = repo;
+        this.auditService = AuditService.getInstance();
+    }
+
+    public static ProductService getInstance(ProductRepository repo) {
+        if (instance == null) {
+            instance = new ProductService(repo);
+        }
+        return instance;
     }
 
     public void registerNewEntity(double price, String code) throws InvalidDataException, SQLException {

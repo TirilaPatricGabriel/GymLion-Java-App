@@ -3,12 +3,20 @@ package classes;
 import java.util.concurrent.atomic.AtomicInteger;
 public class Location {
     private static final AtomicInteger count = new AtomicInteger(0);
-    private final int id;
+    private int id;
     private String countryName, cityName;
     private double latitude, longitude;
 
     public Location(){
         this.id = count.incrementAndGet();
+    }
+
+    public Location(Integer id, String countryName, String cityName, double latitude, double longitude) {
+        this.id = id;
+        this.countryName = countryName;
+        this.cityName = cityName;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public Location(String countryName, String cityName, double latitude, double longitude) {
@@ -63,5 +71,9 @@ public class Location {
                 ", latitude=" + getLatitude() +
                 ", longitude=" + getLongitude() +
                 '}';
+    }
+
+    public void setId(int locationId) {
+        this.id = locationId;
     }
 }

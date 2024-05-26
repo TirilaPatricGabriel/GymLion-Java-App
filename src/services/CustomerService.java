@@ -4,17 +4,30 @@ import classes.Athlete;
 import classes.Customer;
 import classes.FitnessChallenge;
 import exceptions.InvalidDataException;
+import repositories.AthleteRepository;
 import repositories.CustomerRepository;
 import repositories.GymRepository;
 import repositories.OrderRepository;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class CustomerService {
-    private CustomerRepository customerRepo = new CustomerRepository();
+    private CustomerRepository customerRepo;
 
-    public CustomerService(CustomerRepository repo) {
+    private static CustomerService instance;
+    private AuditService auditService;
+
+    private CustomerService(CustomerRepository repo) {
         this.customerRepo = repo;
+        this.auditService = AuditService.getInstance();
+    }
+
+    public static CustomerService getInstance(CustomerRepository repo) {
+        if (instance == null) {
+            instance = new CustomerService(repo);
+        }
+        return instance;
     }
 
     public void registerNewEntity(String name, String email, String phone, String address, int age, double balance) throws InvalidDataException {
@@ -69,14 +82,23 @@ public class CustomerService {
         customerRepo.delete(atl);
     }
 
-    public int getCustomerWithMostOrders (OrderRepository orderRepo) {
-        return customerRepo.getCustomerWithMostOrders(orderRepo);
+    public Customer getCustomerWithMostOrders () {
+        auditService.logAction("Search for customer with most orders");
+        return customerRepo.getCustomerWithMostOrders();
     }
 
-    public Integer rewardCustomerOfTheMonth (OrderRepository orderRepo, Integer reward) throws InvalidDataException {
-        if (reward == null || reward <= 0) {
-            throw new InvalidDataException("Reward must be higher than zero!");
-        }
-        return customerRepo.rewardCustomerOfTheMonth(orderRepo, reward);
+    public void rewardCustomerWithMostOrders(int id, double reward) {
+        customerRepo.rewardCustomerWithMostOrders(id, reward);
+        auditService.logAction("Customer with most orders rewarded");
+    }
+
+    public List<Customer> getCustomersThatCompletedChallenge(int id){
+        auditService.logAction("Searched for customers that completed a challenge");
+        return customerRepo.findUsersThatCompletedChallenge(id);
+    }
+
+    public void showCustomersWithBalanceOverThreshold(Integer threshold) {
+        customerRepo.showCustomersWithBalanceOverThreshold(threshold);
+        auditService.logAction("Searched for customers with balance bigger than threshold");
     }
 }

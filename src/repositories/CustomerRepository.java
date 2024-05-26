@@ -7,6 +7,7 @@ import config.DatabaseConfiguration;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -58,13 +59,14 @@ public class CustomerRepository implements GenericRepository<Customer> {
                     ResultSet persons = personQuery.executeQuery();
 
                     if (persons.next()) {
+                        Integer customerId = persons.getInt("id");
                         String name = persons.getString("name");
                         int age = persons.getInt("age");
                         String email = persons.getString("email");
                         String phone = persons.getString("phone");
                         String address = persons.getString("address");
 
-                        customer = new Customer(name, email, phone, address, age, balance);
+                        customer = new Customer(customerId, name, email, phone, address, age, balance);
                     }
                 }
             }
@@ -132,6 +134,118 @@ public class CustomerRepository implements GenericRepository<Customer> {
         }
     }
 
+    public Customer getCustomerWithMostOrders() {
+        String sql = "SELECT c.*, p.*, COUNT(o.orderId) as orderCount " +
+                "FROM customers c, persons p, orders o " +
+                "WHERE o.customerId = c.customerId AND p.id = c.customerId " +
+                "GROUP BY c.customerId " +
+                "ORDER BY orderCount DESC " +
+                "LIMIT 1";
+
+        try (Connection connection = DatabaseConfiguration.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            if (rs.next()) {
+                int id = rs.getInt("customerId");
+                String name = rs.getString("name");
+                String email = rs.getString("email");
+                String phone = rs.getString("phone");
+                String address = rs.getString("address");
+                int age = rs.getInt("age");
+                int balance = rs.getInt("balance");
+                Customer customer = new Customer(id, name, email, phone, address, age, balance);
+
+                return customer;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return null;
+    }
+
+    public void rewardCustomerWithMostOrders(int id, double reward) {
+        String sql = "UPDATE customers SET balance = balance + ? WHERE customerId = ?";
+
+        try (Connection connection = DatabaseConfiguration.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+
+            stmt.setDouble(1, reward);
+            stmt.setInt(2, id);
+
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<Customer> findUsersThatCompletedChallenge(int challengeId) {
+        String sql = "SELECT c.*, p.* FROM customers c, persons p " +
+                "WHERE p.id = c.customerId AND EXISTS (" +
+                "    SELECT 1 FROM customer_fitness_challenges cc " +
+                "    WHERE c.customerId = cc.customerId AND cc.challengeId = ?" +
+                ")";
+
+        List<Customer> customers = new ArrayList<>();
+
+        try (Connection connection = DatabaseConfiguration.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+
+            stmt.setInt(1, challengeId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    int id = rs.getInt("customerId");
+                    String name = rs.getString("name");
+                    String email = rs.getString("email");
+                    String phone = rs.getString("phone");
+                    String address = rs.getString("address");
+                    int age = rs.getInt("age");
+                    int balance = rs.getInt("balance");
+
+                    Customer customer = new Customer(id, name, email, phone, address, age, balance);
+
+                    customers.add(customer);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return customers;
+    }
+
+    public void showCustomersWithBalanceOverThreshold(Integer threshold) {
+        String sql = "SELECT c.*, p.* FROM customers c, persons p " +
+                "WHERE p.id = c.customerId AND c.balance > ?";
+
+        List<Customer> customers = new ArrayList<>();
+
+        try (Connection connection = DatabaseConfiguration.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+
+            stmt.setInt(1, threshold);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Customer customer = new Customer();
+                    customer.setId(rs.getInt("customerId"));
+                    customer.setName(rs.getString("name"));
+                    customer.setEmail(rs.getString("email"));
+                    customer.setPhone(rs.getString("phone"));
+                    customer.setAddress(rs.getString("address"));
+                    customer.setAge(rs.getInt("age"));
+                    customer.setBalance(rs.getDouble("balance"));
+                    customers.add(customer);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        customers.forEach(System.out::println);
+    }
 
 
 
@@ -184,89 +298,9 @@ public class CustomerRepository implements GenericRepository<Customer> {
 
 
 
-//    @Override
-//    public void add(Customer entity) {
-//        for (int i=0; i<storage.length; i++) {
-//            if (storage[i] == null) {
-//                storage[i] = entity;
-//                return;
-//            }
-//        }
-//        Customer[] newStorage = Arrays.<Customer, Customer>copyOf(storage, 2*storage.length, Customer[].class);
-//        newStorage[storage.length] = entity;
-//        storage = newStorage;
-//    }
-//
-//    @Override
-//    public Customer get(int index) {
-//        for (int i=0; i<storage.length; i++) {
-//            if (storage[i] != null && storage[i].getId() == index) {
-//                return storage[i];
-//            }
-//        }
-//        return storage[0];
-//    }
-//
-//    @Override
-//    public void update(Customer entity) {
-//        for (int i=0; i<storage.length; i++) {
-//            if (storage[i] == entity) {
-//                // TODO UPDATE
-//            }
-//        }
-//    }
-//
-//    @Override
-//    public void delete(Customer entity) {
-//        for (int i = 0; i < storage.length; i++) {
-//            if (storage[i] != null && storage[i] == entity) {
-//                storage[i] = null;
-//                break;
-//            }
-//        }
-//    }
 
     @Override
     public int getSize() {
         return storage.length;
-    }
-
-    public int getCustomerWithMostOrders (OrderRepository orderRepo) {
-        Integer max = -1, customerId = -1;
-        for (int i=0; i<storage.length; i++) {
-            if (storage[i] != null) {
-                Integer nrOfOrders = orderRepo.getNumberOfOrdersOfCustomer(storage[i].getId());
-                if (nrOfOrders > max) {
-                    max = nrOfOrders;
-                    customerId = storage[i].getId();
-                }
-            }
-        }
-        return customerId;
-    }
-
-//    public ArrayList<Integer> getAllCustomersThatCompletedChallenge(int challengeId) {
-//        ArrayList<Integer> customerIds = new ArrayList<>();
-//        for (int i=0; i<storage.length; i++) {
-//            if (storage[i] != null) {
-//                ArrayList<Integer> challengeIds = storage[i].getChallengesCompletedIds();
-//                if (challengeIds.contains(challengeId)) {
-//                    customerIds.add(storage[i].getId());
-//                }
-//            }
-//        }
-//        return customerIds;
-//    }
-
-    public Integer rewardCustomerOfTheMonth (OrderRepository orderRepo, Integer reward) {
-        int customerId = this.getCustomerWithMostOrders(orderRepo);
-        System.out.println("CUSTOMER OF THE MONTH ID:" + customerId);
-        for (int i=0; i<storage.length; i++) {
-            if (storage[i] != null && storage[i].getId() == customerId) {
-                storage[i].setBalance(storage[i].getBalance() + reward);
-                break;
-            }
-        }
-        return customerId;
     }
 }

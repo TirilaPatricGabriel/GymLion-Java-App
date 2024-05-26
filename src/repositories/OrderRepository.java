@@ -43,10 +43,11 @@ public class OrderRepository implements GenericRepository<Order> {
             stmt.setInt(1, index);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
+                int orderId = rs.getInt("orderId");
                 int customerId = rs.getInt("customerId");
                 Date date = rs.getDate("date");
                 double price = rs.getDouble("price");
-                order = new Order(customerId, date.toLocalDate(), price);
+                order = new Order(orderId, customerId, date.toLocalDate(), price);
                 order.setId(index);
             }
         } catch (SQLException e) {

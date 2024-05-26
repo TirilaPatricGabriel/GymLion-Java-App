@@ -11,6 +11,13 @@ public class FitnessChallenge {
     public FitnessChallenge(){
         this.id = count.incrementAndGet();
     }
+
+    public FitnessChallenge(Integer id, String name, String description, Integer points){
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.points = points;
+    }
     public FitnessChallenge(String name, String description, Integer points){
         this.id = count.incrementAndGet();
         this.name = name;

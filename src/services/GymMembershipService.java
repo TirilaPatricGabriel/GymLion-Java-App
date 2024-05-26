@@ -2,13 +2,25 @@ package services;
 
 import classes.GymMembership;
 import exceptions.InvalidDataException;
+import repositories.AthleteRepository;
 import repositories.GymMembershipRepository;
 
 public class GymMembershipService {
     private GymMembershipRepository gymMembershipRepo;
 
-    public GymMembershipService(GymMembershipRepository gymMembershipRepository) {
-        this.gymMembershipRepo = gymMembershipRepository;
+    private static GymMembershipService instance;
+    private AuditService auditService;
+
+    private GymMembershipService(GymMembershipRepository repo) {
+        this.gymMembershipRepo = repo;
+        this.auditService = AuditService.getInstance();
+    }
+
+    public static GymMembershipService getInstance(GymMembershipRepository repo) {
+        if (instance == null) {
+            instance = new GymMembershipService(repo);
+        }
+        return instance;
     }
 
     public void registerNewEntity(int gymId, double price, int durationInMonths, String code) throws InvalidDataException {

@@ -3,11 +3,10 @@ package repositories;
 import classes.Person;
 import classes.Customer;
 import classes.Athlete;
+import config.DatabaseConfiguration;
 
-import java.util.Arrays;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.Iterator;
+import java.sql.*;
+import java.util.*;
 
 /**
  * Repositories are responsible for interacting with the storage of entities. Usually a 1-to-1 relation with the
@@ -28,7 +27,6 @@ public class PersonRepository implements GenericRepository<Person> {
 
     @Override
     public Person get(int index) {
-//        return storage[index];
         Person pers = new Person("", "", "", "", 20);
         return pers;
     }
@@ -92,8 +90,31 @@ public class PersonRepository implements GenericRepository<Person> {
         });
     }
 
-    public void showPeopleSortedByAge(){
-        System.out.println("All people sorted by age:");
-        storage.forEach(System.out::println);
+    public List<Person> showPeopleSortedByAge() {
+        String sql = "SELECT * FROM persons ORDER BY age";
+
+        List<Person> people = new ArrayList<>();
+
+        try (Connection connection = DatabaseConfiguration.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String name = rs.getString("name");
+                String email = rs.getString("email");
+                String phone = rs.getString("phone");
+                String address = rs.getString("address");
+                int age = rs.getInt("age");
+
+                Person person = new Person(id, name, email, phone, address, age);
+
+                people.add(person);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return people;
     }
 }

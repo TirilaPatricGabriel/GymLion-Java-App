@@ -4,9 +4,7 @@ import classes.Gym;
 import config.DatabaseConfiguration;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class GymRepository implements GenericRepository<Gym> {
 
@@ -42,11 +40,12 @@ public class GymRepository implements GenericRepository<Gym> {
             stmt.setInt(1, index);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
+                Integer gymId = rs.getInt("gymId");
                 String name = rs.getString("name");
                 String description = rs.getString("description");
                 int capacity = rs.getInt("capacity");
                 int locationId = rs.getInt("locationId");
-                gym = new Gym(name, description, capacity, locationId);
+                gym = new Gym(gymId, name, description, capacity, locationId);
                 gym.setId(index);
             }
         } catch (SQLException e) {
@@ -141,5 +140,71 @@ public class GymRepository implements GenericRepository<Gym> {
             throw new RuntimeException(e);
         }
         return 0;
+    }
+
+    public List<Gym> findGymBasedOnMembershipPrices(double startPrice, double endPrice) {
+        String sql = "SELECT g.* FROM gyms g, gym_memberships m, products p WHERE g.gymId = m.gymId AND m.productId = p.productId AND p.price BETWEEN ? AND ?";
+        List<Gym> gyms = new ArrayList<>();
+
+        try (Connection connection = DatabaseConfiguration.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+
+            stmt.setDouble(1, startPrice);
+            stmt.setDouble(2, endPrice);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Gym gym = new Gym();
+                    gym.setId(rs.getInt("gymId"));
+                    gym.setName(rs.getString("name"));
+                    gym.setDescription(rs.getString("description"));
+                    gym.setLocation(rs.getInt("locationId"));
+                    gym.setCapacity(rs.getInt("capacity"));
+                    gyms.add(gym);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return gyms;
+    }
+
+    public void changeMembershipPrices(String gymName, Integer percent) {
+        String sql = "UPDATE products p JOIN gym_memberships gm ON gm.productId = p.productId SET p.price = p.price + (p.price * ? / 100) WHERE p.productId = gm.productId AND gm.gymId = (SELECT gymId FROM gyms WHERE name = ?)";
+
+        try (Connection connection = DatabaseConfiguration.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+
+            stmt.setInt(1, percent);
+            stmt.setString(2, gymName);
+
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Map<String, Integer> getGymMembershipCounts() throws SQLException {
+        String query = "SELECT g.name, COUNT(DISTINCT gm.membershipId) AS membershipCount " +
+                "FROM gyms g " +
+                "LEFT JOIN gym_memberships gm ON g.gymId = gm.gymId " +
+                "GROUP BY g.name";
+
+        try (Connection connection = DatabaseConfiguration.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery())
+        {
+
+            Map<String, Integer> gymMembershipCounts = new HashMap<>();
+
+            while (rs.next()) {
+                String gymName = rs.getString("name");
+                int membershipCount = rs.getInt("membershipCount");
+                gymMembershipCounts.put(gymName, membershipCount);
+            }
+
+            return gymMembershipCounts;
+        }
     }
 }

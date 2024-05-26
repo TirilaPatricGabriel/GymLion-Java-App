@@ -5,20 +5,34 @@ import classes.Customer;
 import classes.Event;
 import classes.Location;
 import exceptions.InvalidDataException;
+import repositories.AthleteRepository;
 import repositories.EventRepository;
 import repositories.GymRepository;
 import repositories.LocationRepository;
 
+import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 
 public class EventService {
-    private EventRepository eventRepo = new EventRepository();
+    private EventRepository eventRepo;
 
-    public EventService(EventRepository repo) {
+    private static EventService instance;
+    private AuditService auditService;
+
+    private EventService(EventRepository repo) {
         this.eventRepo = repo;
+        this.auditService = AuditService.getInstance();
+    }
+
+    public static EventService getInstance(EventRepository repo) {
+        if (instance == null) {
+            instance = new EventService(repo);
+        }
+        return instance;
     }
 
     public void registerNewEntity(LocalDate startDate, LocalDate endDate, String name, String description, Integer capacity, Integer locationId) throws InvalidDataException {
@@ -49,15 +63,13 @@ public class EventService {
         eventRepo.delete(event);
     }
 
-//    public ArrayList<HashMap<String, String>> getAllEventsFromAPlaceWithinAPeriod (LocalDate startDate, LocalDate endDate, String countryName, LocationRepository locationRepo) throws InvalidDataException {
-//        if (startDate == null || endDate == null || startDate.compareTo(endDate) > 0) {
-//            throw new InvalidDataException("Invalid dates");
-//        }
-//        return eventRepo.getAllEventsFromAPlaceWithinAPeriod(startDate, endDate, countryName, locationRepo);
-//    }
-//
-//    public void deleteAllEventsThatAlreadyTookPlace () {
-//        eventRepo.deleteAllEventsThatAlreadyTookPlace();
-//        System.out.println("All events that took place were deleted successfully!");
-//    }
+    public void deleteOldEvents() {
+        eventRepo.deleteOldEvents();
+        auditService.logAction("Deleted old events");
+    }
+
+    public List<Event> getAllEventsFromAPeriodAndACity(Date startDate, Date endDate, String city) {
+        auditService.logAction("Searched for events within a period from a city");
+        return eventRepo.getAllEventsFromAPeriodAndACity(startDate, endDate, city);
+    }
 }

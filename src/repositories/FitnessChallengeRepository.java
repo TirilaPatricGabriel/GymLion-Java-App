@@ -42,10 +42,11 @@ public class FitnessChallengeRepository implements GenericRepository<FitnessChal
             stmt.setInt(1, index);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
+                Integer id = rs.getInt("challengeId");
                 String name = rs.getString("name");
                 String description = rs.getString("description");
                 int points = rs.getInt("points");
-                fitnessChallenge = new FitnessChallenge(name, description, points);
+                fitnessChallenge = new FitnessChallenge(id, name, description, points);
                 fitnessChallenge.setId(index);
             }
         } catch (SQLException e) {
@@ -121,28 +122,40 @@ public class FitnessChallengeRepository implements GenericRepository<FitnessChal
         return customerIds;
     }
 
-    public void upgradeChallenge(CustomerRepository customerRepo, Integer numberOfCompletions, Integer points) {
-        String sql = "UPDATE fitness_challenges SET points = points + ? WHERE challengeId = ? AND " +
-                "(SELECT COUNT(*) FROM customer_fitness_challenges WHERE challengeId = ?) < ?";
+    public void upgradeChallenge(Integer numberOfCompletions, Integer points) {
+        String selectSql = "SELECT challengeId FROM fitness_challenges fc " +
+                "WHERE (SELECT COUNT(*) FROM customer_fitness_challenges cfc WHERE cfc.challengeId = fc.challengeId) < ?";
+        String updateSql = "UPDATE fitness_challenges SET points = points + ? WHERE challengeId = ?";
+
         try (Connection connection = DatabaseConfiguration.getConnection();
-             PreparedStatement stmt = connection.prepareStatement(sql)) {
-            List<FitnessChallenge> challenges = getAllChallenges();
-            for (FitnessChallenge challenge : challenges) {
-                int challengeId = challenge.getId();
-                stmt.setInt(1, points);
-                stmt.setInt(2, challengeId);
-                stmt.setInt(3, challengeId);
-                stmt.setInt(4, numberOfCompletions);
-                stmt.addBatch();
+             PreparedStatement selectStmt = connection.prepareStatement(selectSql);
+             PreparedStatement updateStmt = connection.prepareStatement(updateSql)) {
+
+            // Step 1: Identify challenges to update
+            selectStmt.setInt(1, numberOfCompletions);
+            ResultSet rs = selectStmt.executeQuery();
+            List<Integer> challengeIdsToUpdate = new ArrayList<>();
+
+            while (rs.next()) {
+                challengeIdsToUpdate.add(rs.getInt("challengeId"));
             }
-            stmt.executeBatch();
+
+            // Step 2: Perform the update
+            for (Integer challengeId : challengeIdsToUpdate) {
+                updateStmt.setInt(1, points);
+                updateStmt.setInt(2, challengeId);
+                updateStmt.addBatch();
+            }
+
+            updateStmt.executeBatch();
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
     public List<FitnessChallenge> getAllChallenges() throws SQLException {
-        String sql = "SELECT id, name, description FROM challenges";
+        String sql = "SELECT challengeId, name, description, points FROM fitness_challenges";
         List<FitnessChallenge> challenges = new ArrayList<>();
         try (Connection connection = DatabaseConfiguration.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -150,7 +163,7 @@ public class FitnessChallengeRepository implements GenericRepository<FitnessChal
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                int id = rs.getInt("id");
+                int id = rs.getInt("challengeId");
                 String name = rs.getString("name");
                 String description = rs.getString("description");
                 Integer points = rs.getInt("points");

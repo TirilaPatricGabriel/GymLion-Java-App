@@ -3,13 +3,19 @@ package classes;
 import java.util.ArrayList;
 public class Customer extends Person {
     private double balance;
-//    private ArrayList<FitnessChallenge> challengesCompleted = new ArrayList<>();
 
-    // Constructor
+    public Customer(Integer id, String name, String email, String phone, String address, int age, double balance) {
+        super(id, name, email, phone, address, age);
+        this.balance = balance;
+    }
+
     public Customer(String name, String email, String phone, String address, int age, double balance) {
         super(name, email, phone, address, age);
         this.balance = balance;
-//        this.challengesCompleted.addAll(challengesCompleted);
+    }
+
+    public Customer() {
+        super();
     }
 
     @Override
@@ -21,29 +27,26 @@ public class Customer extends Person {
     public double getBalance() {
         return this.balance;
     }
-//    public ArrayList<FitnessChallenge> getChallengesCompleted() {
-//        return this.challengesCompleted;
-//    }
-//    public ArrayList<Integer> getChallengesCompletedIds() {
-//        ArrayList<Integer> challengesCompletedIds = new ArrayList<>();
-//        for (int i=0; i<this.challengesCompleted.size(); i++) {
-//            if (challengesCompleted.get(i) != null) {
-//                challengesCompletedIds.add(challengesCompleted.get(i).getId());
-//            }
-//        }
-//        return challengesCompletedIds;
-//    }
 
     public void setBalance(double balance) {
         this.balance = balance;
     }
 
+    public void setName (String name) {
+        super.setName(name);
+    }
+
+    public void setAddress (String address) {
+        super.setAddress(address);
+    }
+
     @Override
     public String toString() {
         return "Customer{" +
-                "name='" + getName() + '\'' +
-                ", age=" + getAge() +
+                "name='" + super.getName() + '\'' +
+                ", age=" + super.getAge() +
                 ", balance=" + getBalance() +
                 '}';
     }
+
 }
