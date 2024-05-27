@@ -21,7 +21,7 @@ public class CustomerRepository implements GenericRepository<Customer> {
     private static Scanner scanner = new Scanner(System.in);
 
     @Override
-    public void add(Customer entity) {
+    public void add(Customer entity) throws SQLException {
         String sql = "CALL INSERT_CUSTOMER(?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection connection = DatabaseConfiguration.getConnection();
@@ -35,12 +35,12 @@ public class CustomerRepository implements GenericRepository<Customer> {
             stmt.setDouble(7, entity.getBalance());
             stmt.execute();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException("Failed to add a new customer.", e);
         }
     }
 
     @Override
-    public Customer get(int id) {
+    public Customer get(int id) throws SQLException {
         Customer customer = null;
 
         String customerSql = "SELECT * FROM customers WHERE customerId = ?";
@@ -71,14 +71,14 @@ public class CustomerRepository implements GenericRepository<Customer> {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new SQLException("Failed to get customer.", e);
         }
 
         return customer;
     }
 
     @Override
-    public void update(Customer entity) {
+    public void update(Customer entity) throws SQLException {
         String updatePersonSql = "UPDATE persons SET name = ?, email = ?, phone = ?, address = ?, age = ? WHERE id = ?";
         String updateCustomerSql = "UPDATE customers SET balance = ? WHERE customerId = ?";
 
@@ -111,12 +111,12 @@ public class CustomerRepository implements GenericRepository<Customer> {
             customerQuery.setInt(2, entity.getId());
             customerQuery.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new SQLException("Failed to update customer.", e);
         }
     }
 
     @Override
-    public void delete(Customer entity) {
+    public void delete(Customer entity) throws SQLException {
         String deleteCustomerSql = "DELETE FROM customers WHERE customerId = ?";
         String deletePersonSql = "DELETE FROM persons WHERE id = ?";
 
@@ -130,11 +130,11 @@ public class CustomerRepository implements GenericRepository<Customer> {
             personQuery.setInt(1, entity.getId());
             personQuery.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException("Failed to delete customer.", e);
         }
     }
 
-    public Customer getCustomerWithMostOrders() {
+    public Customer getCustomerWithMostOrders() throws SQLException {
         String sql = "SELECT c.*, p.*, COUNT(o.orderId) as orderCount " +
                 "FROM customers c, persons p, orders o " +
                 "WHERE o.customerId = c.customerId AND p.id = c.customerId " +
@@ -159,13 +159,13 @@ public class CustomerRepository implements GenericRepository<Customer> {
                 return customer;
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException("Failed to get customer with most orders.", e);
         }
 
         return null;
     }
 
-    public void rewardCustomerWithMostOrders(int id, double reward) {
+    public void rewardCustomerWithMostOrders(int id, double reward) throws SQLException {
         String sql = "UPDATE customers SET balance = balance + ? WHERE customerId = ?";
 
         try (Connection connection = DatabaseConfiguration.getConnection();
@@ -176,11 +176,11 @@ public class CustomerRepository implements GenericRepository<Customer> {
 
             stmt.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException("Failed to reward customer with most orders.", e);
         }
     }
 
-    public List<Customer> findUsersThatCompletedChallenge(int challengeId) {
+    public List<Customer> findUsersThatCompletedChallenge(int challengeId) throws SQLException {
         String sql = "SELECT c.*, p.* FROM customers c, persons p " +
                 "WHERE p.id = c.customerId AND EXISTS (" +
                 "    SELECT 1 FROM customer_fitness_challenges cc " +
@@ -210,13 +210,13 @@ public class CustomerRepository implements GenericRepository<Customer> {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException("Failed to get the users that completed the challenge.", e);
         }
 
         return customers;
     }
 
-    public void showCustomersWithBalanceOverThreshold(Integer threshold) {
+    public void showCustomersWithBalanceOverThreshold(Integer threshold) throws SQLException {
         String sql = "SELECT c.*, p.* FROM customers c, persons p " +
                 "WHERE p.id = c.customerId AND c.balance > ?";
 
@@ -241,7 +241,7 @@ public class CustomerRepository implements GenericRepository<Customer> {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException("Failed to show customers with balance over threshold.", e);
         }
 
         customers.forEach(System.out::println);

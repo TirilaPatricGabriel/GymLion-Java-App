@@ -34,19 +34,31 @@ public class FitnessChallengeService {
         return instance;
     }
 
-    public void registerNewEntity(String name, String description, Integer points) throws InvalidDataException {
+    public void registerNewEntity(String name, String description, Integer points) throws InvalidDataException, SQLException {
+        if (name == null || name.isEmpty()) {
+            throw new InvalidDataException("Name can't be empty");
+        }
+
+        if (description == null || description.isEmpty()) {
+            throw new InvalidDataException("Description can't be empty");
+        }
+
+        if (points <= 10) {
+            throw new InvalidDataException("Points need to be at least 10");
+        }
+
         FitnessChallenge entity = new FitnessChallenge(name, description, points);
         challengesRepo.add(entity);
     }
 
-    public FitnessChallenge get(int index) throws InvalidDataException {
+    public FitnessChallenge get(int index) throws InvalidDataException, SQLException {
         if (index < 0) {
             throw new InvalidDataException("Index can't be lower than 0");
         }
         return challengesRepo.get(index);
     }
 
-    public void update(int index) throws InvalidDataException {
+    public void update(int index) throws InvalidDataException, SQLException {
         if (index < 0) {
             throw new InvalidDataException("Index can't be lower than 0");
         }
@@ -54,7 +66,7 @@ public class FitnessChallengeService {
         challengesRepo.update(chall);
     }
 
-    public void delete(int index) throws InvalidDataException {
+    public void delete(int index) throws InvalidDataException, SQLException {
         if (index < 0) {
             throw new InvalidDataException("Index can't be lower than 0");
         }
@@ -66,10 +78,14 @@ public class FitnessChallengeService {
         return challengesRepo.getAllChallenges();
     }
 
-    public void upgradeChallengeCompletedLessThanNTimes(Integer n, Integer points) throws InvalidDataException {
+    public void upgradeChallengeCompletedLessThanNTimes(Integer n, Integer points) throws InvalidDataException, SQLException {
         if (n < 0) {
             throw new InvalidDataException("The number can't be lower than 0");
         }
+        if (points <= 0) {
+            throw new InvalidDataException("Points need to be higher than 0");
+        }
+
 
         challengesRepo.upgradeChallenge(n, points);
         auditService.logAction("Searched for challenges completed less than n times");
@@ -84,7 +100,6 @@ public class FitnessChallengeService {
             challenges.sort(Comparator.comparingInt(FitnessChallenge::getPoints));
             return challenges;
         } catch (SQLException e) {
-            e.printStackTrace();
             return Collections.emptyList();
         }
     }

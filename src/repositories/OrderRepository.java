@@ -14,7 +14,7 @@ public class OrderRepository implements GenericRepository<Order> {
     private static Scanner scanner = new Scanner(System.in);
 
     @Override
-    public void add(Order entity) {
+    public void add(Order entity) throws SQLException {
         String sql = "INSERT INTO orders (customerId, date, price) VALUES (?, ?, ?)";
         try (Connection connection = DatabaseConfiguration.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -23,19 +23,18 @@ public class OrderRepository implements GenericRepository<Order> {
             stmt.setDouble(3, entity.getPrice());
             stmt.executeUpdate();
 
-            // Retrieve the generated order ID
             ResultSet rs = stmt.getGeneratedKeys();
             if (rs.next()) {
                 int generatedId = rs.getInt(1);
                 entity.setId(generatedId);
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException("Failed to add order.", e);
         }
     }
 
     @Override
-    public Order get(int index) {
+    public Order get(int index) throws SQLException {
         Order order = null;
         String sql = "SELECT * FROM orders WHERE orderId = ?";
         try (Connection connection = DatabaseConfiguration.getConnection();
@@ -51,13 +50,13 @@ public class OrderRepository implements GenericRepository<Order> {
                 order.setId(index);
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException("Failed to get order.", e);
         }
         return order;
     }
 
     @Override
-    public void update(Order entity) {
+    public void update(Order entity) throws SQLException {
         String sql = "UPDATE orders SET customerId = ?, date = ?, price = ? WHERE orderId = ?";
 
         System.out.println("Enter new customer ID:");
@@ -75,24 +74,24 @@ public class OrderRepository implements GenericRepository<Order> {
             stmt.setInt(4, entity.getId());
             stmt.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException("Failed to update order.", e);
         }
     }
 
     @Override
-    public void delete(Order entity) {
+    public void delete(Order entity) throws SQLException {
         String sql = "DELETE FROM orders WHERE orderId = ?";
         try (Connection connection = DatabaseConfiguration.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, entity.getId());
             stmt.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException("Failed to delete order.", e);
         }
     }
 
     @Override
-    public int getSize() {
+    public int getSize() throws SQLException {
         String sql = "SELECT COUNT(*) FROM orders";
         try (Connection connection = DatabaseConfiguration.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -101,12 +100,12 @@ public class OrderRepository implements GenericRepository<Order> {
                 return rs.getInt(1);
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException("Failed to get size.", e);
         }
         return 0;
     }
 
-    public Integer getNumberOfOrdersOfCustomer(int customerId) {
+    public Integer getNumberOfOrdersOfCustomer(int customerId) throws SQLException {
         String sql = "SELECT COUNT(*) FROM orders WHERE customerId = ?";
         try (Connection connection = DatabaseConfiguration.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -116,7 +115,7 @@ public class OrderRepository implements GenericRepository<Order> {
                 return rs.getInt(1);
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException("Failed to get no orders of customer.", e);
         }
         return 0;
     }

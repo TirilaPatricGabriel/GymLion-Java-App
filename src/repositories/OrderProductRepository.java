@@ -17,6 +17,8 @@ public class OrderProductRepository {
             stmt.setInt(1, orderProduct.getOrderId());
             stmt.setInt(2, orderProduct.getProductId());
             stmt.execute();
+        } catch (SQLException e) {
+            throw new SQLException("Failed to connect product to order.", e);
         }
     }
 
@@ -41,6 +43,8 @@ public class OrderProductRepository {
 
                 products.add(product);
             }
+        } catch (SQLException e) {
+            throw new SQLException("Failed to get products by order id.", e);
         }
         return products;
     }
@@ -55,6 +59,8 @@ public class OrderProductRepository {
             while (rs.next()) {
                 orderProducts.add(new OrderProduct(rs.getInt("orderId"), rs.getInt("productId")));
             }
+        } catch (SQLException e) {
+            throw new SQLException("Failed to get orders by product id.", e);
         }
         return orderProducts;
     }
@@ -66,6 +72,8 @@ public class OrderProductRepository {
             stmt.setInt(1, orderProduct.getOrderId());
             stmt.setInt(2, orderProduct.getProductId());
             stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new SQLException("Failed to remove product from order.", e);
         }
     }
 
@@ -75,6 +83,8 @@ public class OrderProductRepository {
              PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, orderId);
             stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new SQLException("Failed to remove all products from order.", e);
         }
     }
 }

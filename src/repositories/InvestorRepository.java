@@ -10,7 +10,7 @@ import java.util.List;
 public class InvestorRepository implements GenericRepository<Investor> {
 
     @Override
-    public void add(Investor entity) {
+    public void add(Investor entity) throws SQLException {
         String sql = "INSERT INTO investors (name, contractValue) VALUES (?, ?)";
         try (Connection connection = DatabaseConfiguration.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -25,12 +25,12 @@ public class InvestorRepository implements GenericRepository<Investor> {
                 entity.setId(generatedId);
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException("Failed to add new investor.", e);
         }
     }
 
     @Override
-    public Investor get(int index) {
+    public Investor get(int index) throws SQLException {
         Investor investor = null;
         String sql = "SELECT * FROM investors WHERE investorId = ?";
         try (Connection connection = DatabaseConfiguration.getConnection();
@@ -44,13 +44,13 @@ public class InvestorRepository implements GenericRepository<Investor> {
                 investor.setId(index);
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException("Failed to get investor.", e);
         }
         return investor;
     }
 
     @Override
-    public void update(Investor entity) {
+    public void update(Investor entity) throws SQLException {
         String sql = "UPDATE investors SET name = ?, contractValue = ? WHERE investorId = ?";
         try (Connection connection = DatabaseConfiguration.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -59,24 +59,24 @@ public class InvestorRepository implements GenericRepository<Investor> {
             stmt.setInt(3, entity.getId());
             stmt.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException("Failed to update investor.", e);
         }
     }
 
     @Override
-    public void delete(Investor entity) {
+    public void delete(Investor entity) throws SQLException {
         String sql = "DELETE FROM investors WHERE investorId = ?";
         try (Connection connection = DatabaseConfiguration.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, entity.getId());
             stmt.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException("Failed to delete investor.", e);
         }
     }
 
     @Override
-    public int getSize() {
+    public int getSize() throws SQLException {
         String sql = "SELECT COUNT(*) FROM investors";
         try (Connection connection = DatabaseConfiguration.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -85,7 +85,7 @@ public class InvestorRepository implements GenericRepository<Investor> {
                 return rs.getInt(1);
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException("Failed to get size.", e);
         }
         return 0;
     }

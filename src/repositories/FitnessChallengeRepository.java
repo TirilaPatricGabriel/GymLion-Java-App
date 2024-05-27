@@ -13,7 +13,7 @@ public class FitnessChallengeRepository implements GenericRepository<FitnessChal
     private static Scanner scanner = new Scanner(System.in);
 
     @Override
-    public void add(FitnessChallenge entity) {
+    public void add(FitnessChallenge entity) throws SQLException {
         String sql = "INSERT INTO fitness_challenges (name, description, points) VALUES (?, ?, ?)";
         try (Connection connection = DatabaseConfiguration.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -29,12 +29,12 @@ public class FitnessChallengeRepository implements GenericRepository<FitnessChal
                 entity.setId(generatedId);
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException("Failed to add new challenge.", e);
         }
     }
 
     @Override
-    public FitnessChallenge get(int index) {
+    public FitnessChallenge get(int index) throws SQLException {
         FitnessChallenge fitnessChallenge = null;
         String sql = "SELECT * FROM fitness_challenges WHERE challengeId = ?";
         try (Connection connection = DatabaseConfiguration.getConnection();
@@ -50,13 +50,13 @@ public class FitnessChallengeRepository implements GenericRepository<FitnessChal
                 fitnessChallenge.setId(index);
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException("Failed to get challenge.", e);
         }
         return fitnessChallenge;
     }
 
     @Override
-    public void update(FitnessChallenge entity) {
+    public void update(FitnessChallenge entity) throws SQLException {
         String sql = "UPDATE fitness_challenges SET name = ?, description = ?, points = ? WHERE challengeId = ?";
         System.out.println("New name:");
         String name = scanner.nextLine();
@@ -73,24 +73,24 @@ public class FitnessChallengeRepository implements GenericRepository<FitnessChal
             stmt.setInt(4, entity.getId());
             stmt.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException("Failed to update challenge.", e);
         }
     }
 
     @Override
-    public void delete(FitnessChallenge entity) {
+    public void delete(FitnessChallenge entity) throws SQLException {
         String sql = "DELETE FROM fitness_challenges WHERE challengeId = ?";
         try (Connection connection = DatabaseConfiguration.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, entity.getId());
             stmt.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException("Failed to delete challenge.", e);
         }
     }
 
     @Override
-    public int getSize() {
+    public int getSize() throws SQLException {
         String sql = "SELECT COUNT(*) FROM fitness_challenges";
         try (Connection connection = DatabaseConfiguration.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -99,12 +99,12 @@ public class FitnessChallengeRepository implements GenericRepository<FitnessChal
                 return rs.getInt(1);
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException("Failed to get size.", e);
         }
         return 0;
     }
 
-    public List<Integer> getAllCustomersThatCompletedChallenge(CustomerRepository customerRepo, String challengeName) {
+    public List<Integer> getAllCustomersThatCompletedChallenge(CustomerRepository customerRepo, String challengeName) throws SQLException {
         List<Integer> customerIds = new ArrayList<>();
         String sql = "SELECT c.customerId FROM customer_fitness_challenges cfc " +
                 "JOIN fitness_challenges fc ON cfc.challengeId = fc.challengeId " +
@@ -117,12 +117,12 @@ public class FitnessChallengeRepository implements GenericRepository<FitnessChal
                 customerIds.add(rs.getInt("customerId"));
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException("Failed to get all customers that completed a challenge.", e);
         }
         return customerIds;
     }
 
-    public void upgradeChallenge(Integer numberOfCompletions, Integer points) {
+    public void upgradeChallenge(Integer numberOfCompletions, Integer points) throws SQLException {
         String selectSql = "SELECT challengeId FROM fitness_challenges fc " +
                 "WHERE (SELECT COUNT(*) FROM customer_fitness_challenges cfc WHERE cfc.challengeId = fc.challengeId) < ?";
         String updateSql = "UPDATE fitness_challenges SET points = points + ? WHERE challengeId = ?";
@@ -150,7 +150,7 @@ public class FitnessChallengeRepository implements GenericRepository<FitnessChal
             updateStmt.executeBatch();
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException("Failed to upgrade challenge.", e);
         }
     }
 
@@ -171,6 +171,8 @@ public class FitnessChallengeRepository implements GenericRepository<FitnessChal
                 FitnessChallenge challenge = new FitnessChallenge(name, description, points);
                 challenges.add(challenge);
             }
+        } catch (SQLException e) {
+            throw new SQLException("Failed to get all challenges.", e);
         }
         return challenges;
     }

@@ -17,6 +17,8 @@ public class ChallengeCustomerRepository {
             stmt.setInt(1, challengeCustomer.getChallengeId());
             stmt.setInt(2, challengeCustomer.getCustomerId());
             stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new SQLException("Failed to connect customer to challenge.", e);
         }
     }
 
@@ -41,6 +43,8 @@ public class ChallengeCustomerRepository {
                 FitnessChallenge challenge = new FitnessChallenge(name, description, points);
                 challenges.add(challenge);
             }
+        } catch (SQLException e) {
+            throw new SQLException("Failed to get challenges by customer id.", e);
         }
         return challenges;
     }
@@ -55,6 +59,8 @@ public class ChallengeCustomerRepository {
             while (rs.next()) {
                 challengeCustomers.add(new ChallengeCustomer(rs.getInt("challengeId"), rs.getInt("customerId")));
             }
+        } catch (SQLException e) {
+            throw new SQLException("Failed to get customers by challenge id.", e);
         }
         return challengeCustomers;
     }
@@ -75,6 +81,8 @@ public class ChallengeCustomerRepository {
              PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, customerId);
             stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new SQLException("Failed to remove all challenges from customer.", e);
         }
     }
 }

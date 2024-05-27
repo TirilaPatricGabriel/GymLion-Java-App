@@ -22,7 +22,7 @@ public class ProductRepository {
             stmt.setString(3, product.getCode());
             stmt.execute();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new SQLException("Failed to add product.", e);
         }
     }
 
@@ -35,6 +35,8 @@ public class ProductRepository {
             if (rs.next()) {
                 return new Product(rs.getInt("productId"), rs.getDouble("price"), rs.getString("code"));
             }
+        } catch (SQLException e) {
+            throw new SQLException("Failed to get product.", e);
         }
         return null;
     }
@@ -53,6 +55,8 @@ public class ProductRepository {
             stmt.setString(2, code);
             stmt.setInt(3, product.getId());
             stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new SQLException("Failed to update product.", e);
         }
     }
 
@@ -66,6 +70,8 @@ public class ProductRepository {
             stmt.setInt(1, id);
             membershipStmt.execute();
             stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new SQLException("Failed to delete product.", e);
         }
     }
 
@@ -93,6 +99,8 @@ public class ProductRepository {
                     products.add(product);
                 }
             }
+        } catch (SQLException e) {
+            throw new SQLException("Failed to get all products.", e);
         }
         return products;
     }

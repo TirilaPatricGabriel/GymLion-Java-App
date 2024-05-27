@@ -7,6 +7,7 @@ import repositories.FitnessChallengeRepository;
 import repositories.GymRepository;
 
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +30,7 @@ public class AthleteService {
         return instance;
     }
 
-    public void registerNewEntity(String name, String email, String phone, String address, int age, double salary, int socialMediaFollowers, double bonusPerTenThousandLikes) throws InvalidDataException {
+    public void registerNewEntity(String name, String email, String phone, String address, int age, double salary, int socialMediaFollowers, double bonusPerTenThousandLikes) throws InvalidDataException, SQLException {
 
         if (name == null || name.trim().isEmpty()) {
             throw new InvalidDataException("Invalid name");
@@ -67,14 +68,14 @@ public class AthleteService {
         athleteRepository.add(entity);
     }
 
-    public Athlete get(int id) throws InvalidDataException {
+    public Athlete get(int id) throws InvalidDataException, SQLException {
         if (id < 0) {
             throw new InvalidDataException("Index can't be lower than 0");
         }
         return athleteRepository.get(id);
     }
 
-    public void update(int id) throws InvalidDataException {
+    public void update(int id) throws InvalidDataException, SQLException {
         if (id < 0) {
             throw new InvalidDataException("Index can't be lower than 0");
         }
@@ -82,7 +83,7 @@ public class AthleteService {
         athleteRepository.update(atl);
     }
 
-    public void delete(int id) throws InvalidDataException {
+    public void delete(int id) throws InvalidDataException, SQLException {
         if (id < 0) {
             throw new InvalidDataException("Index can't be lower than 0");
         }
@@ -90,7 +91,7 @@ public class AthleteService {
         athleteRepository.delete(atl);
     }
 
-    public void deleteExpensiveAthletes(int percentage) throws InvalidDataException {
+    public void deleteExpensiveAthletes(int percentage) throws InvalidDataException, SQLException {
         if (percentage < 0) {
             throw new InvalidDataException("Percentage can't be lower than 0");
         }
@@ -102,7 +103,7 @@ public class AthleteService {
         auditService.logAction("Deleted expensive athletes");
     }
 
-    public void increaseSalaryOfPopularAthletes(Integer followers, Double percentage) throws InvalidDataException {
+    public void increaseSalaryOfPopularAthletes(Integer followers, Double percentage) throws InvalidDataException, SQLException {
         if (followers < 0) {
             throw new InvalidDataException("Folowers can't be lower than 0");
         }

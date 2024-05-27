@@ -29,10 +29,10 @@ public class ProductService {
 
     public void registerNewEntity(double price, String code) throws InvalidDataException, SQLException {
         if (price <= 0) {
-            throw new InvalidDataException("Price must be greater than zero.");
+            throw new InvalidDataException("Price can't be lower than 0.");
         }
         if (code == null || code.trim().isEmpty()) {
-            throw new InvalidDataException("Code cannot be null or empty.");
+            throw new InvalidDataException("Code cannot be empty.");
         }
 
         Product product = new Product(price, code);
@@ -40,15 +40,15 @@ public class ProductService {
     }
 
     public Product get(int id) throws InvalidDataException, SQLException {
-        if (id <= 0) {
-            throw new InvalidDataException("Invalid product ID.");
+        if (id < 0) {
+            throw new InvalidDataException("Invalid ID.");
         }
         return productRepository.get(id);
     }
 
     public void update(int id) throws InvalidDataException, SQLException {
-        if (id <= 0) {
-            throw new InvalidDataException("Invalid product ID.");
+        if (id < 0) {
+            throw new InvalidDataException("Invalid ID.");
         }
 
         Product product = productRepository.get(id);
@@ -56,8 +56,8 @@ public class ProductService {
     }
 
     public void delete(int id) throws InvalidDataException, SQLException {
-        if (id <= 0) {
-            throw new InvalidDataException("Invalid product ID.");
+        if (id < 0) {
+            throw new InvalidDataException("Invalid ID.");
         }
         productRepository.delete(id);
     }

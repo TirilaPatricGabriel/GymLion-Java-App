@@ -20,7 +20,7 @@ public class LocationRepository implements GenericRepository<Location> {
     private Location[] storage = new Location[100];
 
     @Override
-    public void add(Location entity) {
+    public void add(Location entity) throws SQLException {
         String sql = "CALL INSERT_LOCATION(?, ?, ?, ?, ?)";
 
         try (Connection connection = DatabaseConfiguration.getConnection();
@@ -32,12 +32,12 @@ public class LocationRepository implements GenericRepository<Location> {
             stmt.setDouble(5, entity.getLongitude());
             stmt.execute();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException("Failed to add new location.", e);
         }
     }
 
     @Override
-    public Location get(int id) {
+    public Location get(int id) throws SQLException {
         Location location = null;
 
         String locationSql = "SELECT * FROM locations WHERE locationId = ?";
@@ -48,7 +48,7 @@ public class LocationRepository implements GenericRepository<Location> {
             ResultSet locations = locationQuery.executeQuery();
 
             if (locations.next()) {
-                Integer locationid = locations.getInt("locationId");
+                Integer locationId = locations.getInt("locationId");
                 String cityName = locations.getString("cityName");
                 String countryName = locations.getString("countryName");
                 double latitude = locations.getDouble("latitude");
@@ -56,14 +56,14 @@ public class LocationRepository implements GenericRepository<Location> {
                 location = new Location(id, cityName, countryName, latitude, longitude);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new SQLException("Failed to get location.", e);
         }
 
         return location;
     }
 
     @Override
-    public void update(Location entity) {
+    public void update(Location entity) throws SQLException {
         String updateLocationSql = "UPDATE locations SET cityName = ?, countryName = ?, latitude = ?, longitude = ? WHERE locationId = ?";
 
         System.out.println("Country name:");
@@ -85,12 +85,12 @@ public class LocationRepository implements GenericRepository<Location> {
             locationQuery.setDouble(5, entity.getId());
             locationQuery.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new SQLException("Failed to update location.", e);
         }
     }
 
     @Override
-    public void delete(Location entity) {
+    public void delete(Location entity) throws SQLException {
         String deleteLocationSql = "DELETE FROM locations WHERE locationId = ?";
 
         try (Connection connection = DatabaseConfiguration.getConnection();
@@ -99,7 +99,7 @@ public class LocationRepository implements GenericRepository<Location> {
             locationQuery.setInt(1, entity.getId());
             locationQuery.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException("Failed to delete location.", e);
         }
     }
 
@@ -108,7 +108,7 @@ public class LocationRepository implements GenericRepository<Location> {
         return 0;
     }
 
-    public List<Location> getMostFrequentEventLocations() {
+    public List<Location> getMostFrequentEventLocations() throws SQLException {
         String sql = "SELECT l.*, COUNT(e.eventId) as eventCount " +
                 "FROM locations l " +
                 "JOIN events e ON l.locationId = e.locationId " +
@@ -136,7 +136,7 @@ public class LocationRepository implements GenericRepository<Location> {
                 locations.add(location);
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException("Failed to get most frequent locations.", e);
         }
 
         return locations;

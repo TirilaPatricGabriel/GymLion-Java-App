@@ -5,6 +5,7 @@ import exceptions.InvalidDataException;
 import repositories.AthleteRepository;
 import repositories.OrderRepository;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 
 public class OrderService {
@@ -25,8 +26,8 @@ public class OrderService {
         return instance;
     }
 
-    public Integer registerNewEntity(int customerId, LocalDate date, double price) throws InvalidDataException {
-        if (customerId <= 0) {
+    public Integer registerNewEntity(int customerId, LocalDate date, double price) throws InvalidDataException, SQLException {
+        if (customerId < 0) {
             throw new InvalidDataException("Invalid customer ID");
         }
         if (date == null) {
@@ -41,16 +42,16 @@ public class OrderService {
         return entity.getId();
     }
 
-    public Order get(int index) throws InvalidDataException {
-        if (index <= 0) {
-            throw new InvalidDataException("Index can't be lower than or equal to 0");
+    public Order get(int index) throws InvalidDataException, SQLException {
+        if (index < 0) {
+            throw new InvalidDataException("Index can't be lower than 0");
         }
         return orderRepo.get(index);
     }
 
-    public void update(int index) throws InvalidDataException {
-        if (index <= 0) {
-            throw new InvalidDataException("Index can't be lower than or equal to 0");
+    public void update(int index) throws InvalidDataException, SQLException {
+        if (index < 0) {
+            throw new InvalidDataException("Index can't be lower than 0");
         }
         Order order = orderRepo.get(index);
         if (order == null) {
@@ -60,9 +61,9 @@ public class OrderService {
         orderRepo.update(order);
     }
 
-    public void delete(int index) throws InvalidDataException {
-        if (index <= 0) {
-            throw new InvalidDataException("Index can't be lower than or equal to 0");
+    public void delete(int index) throws InvalidDataException, SQLException {
+        if (index < 0) {
+            throw new InvalidDataException("Index can't be lower than 0");
         }
         Order order = orderRepo.get(index);
         if (order == null) {

@@ -16,6 +16,8 @@ public class CustomerMembershipRepository {
             stmt.setInt(1, customerMembership.getMembershipId());
             stmt.setInt(2, customerMembership.getCustomerId());
             stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new SQLException("Failed to make the customer - membership connection.", e);
         }
     }
 
@@ -29,6 +31,8 @@ public class CustomerMembershipRepository {
             while (rs.next()) {
                 customerMemberships.add(new CustomerMembership(rs.getInt("membershipId"), rs.getInt("customerId")));
             }
+        } catch (SQLException e) {
+            throw new SQLException("Failed to get memberships by customer id.", e);
         }
         return customerMemberships;
     }
@@ -43,6 +47,8 @@ public class CustomerMembershipRepository {
             while (rs.next()) {
                 customerMemberships.add(new CustomerMembership(rs.getInt("membershipId"), rs.getInt("customerId")));
             }
+        } catch (SQLException e) {
+            throw new SQLException("Failed to get customers by membership id.", e);
         }
         return customerMemberships;
     }
@@ -54,6 +60,8 @@ public class CustomerMembershipRepository {
             stmt.setInt(1, customerMembership.getMembershipId());
             stmt.setInt(2, customerMembership.getCustomerId());
             stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new SQLException("Failed to delete customer from membership.", e);
         }
     }
 

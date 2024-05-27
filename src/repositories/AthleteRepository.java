@@ -20,7 +20,7 @@ public class AthleteRepository implements GenericRepository<Athlete> {
     private static Scanner scanner = new Scanner(System.in);
 
     @Override
-    public void add(Athlete entity) {
+    public void add(Athlete entity) throws SQLException {
         String sql = "CALL INSERT_ATHLETE(?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection connection = DatabaseConfiguration.getConnection();
              CallableStatement stmt = connection.prepareCall(sql)) {
@@ -38,12 +38,12 @@ public class AthleteRepository implements GenericRepository<Athlete> {
             int generatedId = stmt.getInt(1);
             entity.setId(generatedId);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException("Failed to register a new athlete in the database.", e);
         }
     }
 
     @Override
-    public Athlete get(int id) {
+    public Athlete get(int id) throws SQLException {
         Athlete athlete = null;
 
         String athleteSql = "SELECT * FROM athletes WHERE athleteId = ?";
@@ -76,13 +76,13 @@ public class AthleteRepository implements GenericRepository<Athlete> {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new SQLException("Failed to get the athlete from the database.", e);
         }
         return athlete;
     }
 
     @Override
-    public void update(Athlete entity) {
+    public void update(Athlete entity) throws SQLException {
         String updatePersonSql = "UPDATE persons SET name = ?, email = ?, phone = ?, address = ?, age = ? WHERE id = ?";
         String updateAthleteSql = "UPDATE athletes SET salary = ?, bonusPerTenThousandLikes = ?, socialMediaFollowers = ? WHERE athleteId = ?";
 
@@ -121,12 +121,12 @@ public class AthleteRepository implements GenericRepository<Athlete> {
             athleteStmt.setInt(4, entity.getId());
             athleteStmt.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException("Failed to update the athlete.", e);
         }
     }
 
     @Override
-    public void delete(Athlete entity) {
+    public void delete(Athlete entity) throws SQLException {
         String deleteCompetitionAthletesSql = "DELETE FROM competition_athletes WHERE athleteId = ?";
         String deleteAthleteSql = "DELETE FROM athletes WHERE athleteId = ?";
 
@@ -149,12 +149,12 @@ public class AthleteRepository implements GenericRepository<Athlete> {
             connection.commit();
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException("Failed to delete the athlete.", e);
         }
     }
 
 
-    public List<Athlete> getExpensiveAthletes(double percentage) {
+    public List<Athlete> getExpensiveAthletes(double percentage) throws SQLException {
         List<Athlete> expensiveAthletes = new ArrayList<>();
         String sql = "SELECT a.*, p.name, p.age, p.email, p.phone, p.address FROM athletes a JOIN persons p ON a.athleteId = p.id WHERE (a.salary * (? / 100)) > a.socialMediaFollowers";
 
@@ -179,12 +179,12 @@ public class AthleteRepository implements GenericRepository<Athlete> {
                 expensiveAthletes.add(athlete);
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException("Failed to get expensive athletes.", e);
         }
         return expensiveAthletes;
     }
 
-    public void increaseSalaryOfPopularAthletes(Integer followers, Double percentage) {
+    public void increaseSalaryOfPopularAthletes(Integer followers, Double percentage) throws SQLException {
         String updateAthletesSql = "UPDATE athletes SET salary = salary + (salary * ? / 100) WHERE socialMediaFollowers > ?";
 
         try (Connection connection = DatabaseConfiguration.getConnection();
@@ -196,7 +196,7 @@ public class AthleteRepository implements GenericRepository<Athlete> {
             int rowsUpdated = stmt.executeUpdate();
             System.out.println("Number of salaries updated: " + rowsUpdated);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException("Failed to increase the salaries.", e);
         }
     }
 

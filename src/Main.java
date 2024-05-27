@@ -116,7 +116,7 @@ public class Main {
         } catch (InvalidDataException e) {
             System.out.println("Error: " + e.getMessage());
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            handleSQLException(e);
         }
     }
 
@@ -204,11 +204,11 @@ public class Main {
         } catch (InvalidDataException e) {
             System.out.println("Error: " + e.getMessage());
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            handleSQLException(e);
         }
     }
 
-    private static void handleAthleteOperations(int operation) throws InvalidDataException {
+    private static void handleAthleteOperations(int operation) throws InvalidDataException, SQLException {
         switch (operation) {
             case 1:
                 System.out.println("Name:");
@@ -250,7 +250,7 @@ public class Main {
         }
     }
 
-    private static void handleCustomerOperations(int operation) throws InvalidDataException {
+    private static void handleCustomerOperations(int operation) throws InvalidDataException, SQLException {
         switch (operation) {
             case 1:
                 System.out.println("Name:");
@@ -288,7 +288,7 @@ public class Main {
         }
     }
 
-    private static void handleFitnessChallengeOperations(int operation) throws InvalidDataException {
+    private static void handleFitnessChallengeOperations(int operation) throws InvalidDataException, SQLException {
         switch (operation) {
             case 1:
                 System.out.println("Enter name:");
@@ -320,7 +320,7 @@ public class Main {
         }
     }
 
-    private static void handleGymOperations(int operation) throws InvalidDataException {
+    private static void handleGymOperations(int operation) throws InvalidDataException, SQLException {
         switch (operation) {
             case 1:
                 System.out.println("Enter name:");
@@ -354,7 +354,7 @@ public class Main {
         }
     }
 
-    private static void handleGymMembershipOperations(int operation) throws InvalidDataException {
+    private static void handleGymMembershipOperations(int operation) throws InvalidDataException, SQLException {
         switch (operation) {
             case 1:
                 System.out.println("Enter gym ID:");
@@ -388,7 +388,7 @@ public class Main {
         }
     }
 
-    private static void handleOrderOperations(int operation) throws InvalidDataException {
+    private static void handleOrderOperations(int operation) throws InvalidDataException, SQLException {
         switch (operation) {
             case 1:
                 System.out.println("Enter customer ID:");
@@ -420,7 +420,7 @@ public class Main {
         }
     }
 
-    private static void handleLocationOperations(int location) throws InvalidDataException {
+    private static void handleLocationOperations(int location) throws InvalidDataException, SQLException {
         switch (location) {
             case 1:
                 System.out.println("Country name:");
@@ -454,7 +454,7 @@ public class Main {
         }
     }
 
-    private static void handleEventOperations(int event) throws InvalidDataException {
+    private static void handleEventOperations(int event) throws InvalidDataException, SQLException {
         switch (event) {
             case 1:
                 System.out.println("Start date:");
@@ -578,7 +578,7 @@ public class Main {
             System.out.println("Write anything to continue");
             String x = scanner.nextLine();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new SQLException("Couldn't create order.", e);
         }
     }
 
@@ -619,7 +619,7 @@ public class Main {
             System.out.println("Write anything to continue");
             String x = scanner.nextLine();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new SQLException("Couldn't complete challenges.", e);
         }
     }
 
@@ -650,7 +650,7 @@ public class Main {
         personService.showPeopleSortedByAge().forEach(System.out::println);
     }
 
-    private static void increaseSalaryOfPopularAthletes() throws InvalidDataException {
+    private static void increaseSalaryOfPopularAthletes() throws InvalidDataException, SQLException {
         System.out.println("Number of followers:");
         Integer followers = Integer.parseInt(scanner.nextLine());
         System.out.println("Percentage:");
@@ -658,7 +658,7 @@ public class Main {
         athleteService.increaseSalaryOfPopularAthletes(followers, percentage);
     }
 
-    private static void showCustomersWithBalanceOverThreshold() {
+    private static void showCustomersWithBalanceOverThreshold() throws SQLException, InvalidDataException {
         System.out.println("Threshold:");
         Integer threshold = Integer.parseInt(scanner.nextLine());
 
@@ -666,7 +666,7 @@ public class Main {
 
     }
 
-    private static void upgradeChallengeCompletedLessThanNTimes() throws InvalidDataException {
+    private static void upgradeChallengeCompletedLessThanNTimes() throws InvalidDataException, SQLException {
         System.out.println("Number:");
         Integer n = Integer.parseInt(scanner.nextLine());
         System.out.println("Points:");
@@ -675,7 +675,7 @@ public class Main {
         fitnessChallengeService.upgradeChallengeCompletedLessThanNTimes(n, points);
     }
 
-    private static void findUsersThatCompletedChallenge() {
+    private static void findUsersThatCompletedChallenge() throws SQLException {
         System.out.println("Give id of challenge:");
         Integer challengeId = Integer.parseInt(scanner.nextLine());
 
@@ -684,7 +684,7 @@ public class Main {
         customers.forEach(System.out::println);
     }
 
-    private static void getAllEventsFromAPeriodAndACity() {
+    private static void getAllEventsFromAPeriodAndACity() throws SQLException, InvalidDataException {
         System.out.println("Start date:");
         Date startDate = Date.valueOf(scanner.nextLine());
         System.out.println("End date:");
@@ -696,13 +696,13 @@ public class Main {
         events.forEach(System.out::println);
     }
 
-    private static void deleteOldEvents() {
+    private static void deleteOldEvents() throws SQLException {
         eventService.deleteOldEvents();
 
         System.out.println("Old events were deleted successfully!");
     }
 
-    private static void rewardCustomerWithMostOrder() {
+    private static void rewardCustomerWithMostOrder() throws SQLException, InvalidDataException {
         System.out.println("Reward:");
         Double reward = Double.parseDouble(scanner.nextLine());
         Customer customer = customerService.getCustomerWithMostOrders();
@@ -710,18 +710,18 @@ public class Main {
         customerService.rewardCustomerWithMostOrders(customer.getId(), reward);
     }
 
-    private static void getCustomerWithMostOrders() {
+    private static void getCustomerWithMostOrders() throws SQLException {
         System.out.println(customerService.getCustomerWithMostOrders());
     }
 
-    private static void deleteExpensiveAthletes() throws InvalidDataException {
+    private static void deleteExpensiveAthletes() throws InvalidDataException, SQLException {
         System.out.println("Percentage:");
         Integer percents = Integer.parseInt(scanner.nextLine());
         athleteService.deleteExpensiveAthletes(percents);
 
     }
 
-    private static void getMostFrequentEventLocations() {
+    private static void getMostFrequentEventLocations() throws SQLException {
         List<Location> locations = locationService.getMostFrequentEventLocations();
 
         locations.forEach(System.out::println);
@@ -739,6 +739,10 @@ public class Main {
     private static void getChallengesSortedByPoints() throws SQLException {
         List<FitnessChallenge> challenges = fitnessChallengeService.getAllChallengesSortedByPoints();
         challenges.forEach(System.out::println);
+    }
+
+    private static void handleSQLException(SQLException e) {
+        System.err.println("A database error occurred: " + e.getMessage() + ". Please try again later or contact support if the issue persists.");
     }
 }
 

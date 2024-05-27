@@ -5,6 +5,8 @@ import exceptions.InvalidDataException;
 import repositories.AthleteRepository;
 import repositories.GymMembershipRepository;
 
+import java.sql.SQLException;
+
 public class GymMembershipService {
     private GymMembershipRepository gymMembershipRepo;
 
@@ -23,7 +25,7 @@ public class GymMembershipService {
         return instance;
     }
 
-    public void registerNewEntity(int gymId, double price, int durationInMonths, String code) throws InvalidDataException {
+    public void registerNewEntity(int gymId, double price, int durationInMonths, String code) throws InvalidDataException, SQLException {
         if (gymId <= 0) {
             throw new InvalidDataException("Invalid gym ID");
         }
@@ -40,14 +42,14 @@ public class GymMembershipService {
         gymMembershipRepo.add(entity);
     }
 
-    public GymMembership get(int index) throws InvalidDataException {
+    public GymMembership get(int index) throws InvalidDataException, SQLException {
         if (index <= 0) {
             throw new InvalidDataException("Index can't be lower than or equal to 0");
         }
         return gymMembershipRepo.get(index);
     }
 
-    public void update(int index) throws InvalidDataException {
+    public void update(int index) throws InvalidDataException, SQLException {
         if (index <= 0) {
             throw new InvalidDataException("Index can't be lower than or equal to 0");
         }
@@ -59,7 +61,7 @@ public class GymMembershipService {
         gymMembershipRepo.update(membership);
     }
 
-    public void delete(int index) throws InvalidDataException {
+    public void delete(int index) throws InvalidDataException, SQLException {
         if (index <= 0) {
             throw new InvalidDataException("Index can't be lower than or equal to 0");
         }

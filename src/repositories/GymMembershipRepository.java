@@ -12,7 +12,7 @@ public class GymMembershipRepository implements GenericRepository<GymMembership>
 
     private static Scanner scanner = new Scanner(System.in);
     @Override
-    public void add(GymMembership entity) {
+    public void add(GymMembership entity) throws SQLException {
         String sql = "CALL INSERT_GYM_MEMBERSHIP(?, ?, ?, ?, ?)";
         try (Connection connection = DatabaseConfiguration.getConnection();
              CallableStatement stmt = connection.prepareCall(sql)) {
@@ -27,12 +27,12 @@ public class GymMembershipRepository implements GenericRepository<GymMembership>
             int generatedId = stmt.getInt(1);
             entity.setId(generatedId);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException("Failed to add new membership.", e);
         }
     }
 
     @Override
-    public GymMembership get(int index) {
+    public GymMembership get(int index) throws SQLException {
         GymMembership membership = null;
         String sql = "SELECT gm.membershipId, gm.gymId, gm.durationInMonths, p.price, p.code " +
                 "FROM gym_memberships gm JOIN products p ON gm.productId = p.productId WHERE gm.membershipId = ?";
@@ -49,13 +49,13 @@ public class GymMembershipRepository implements GenericRepository<GymMembership>
                 membership.setId(rs.getInt("membershipId"));
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException("Failed to get membership.", e);
         }
         return membership;
     }
 
     @Override
-    public void update(GymMembership entity) {
+    public void update(GymMembership entity) throws SQLException {
         String sql = "UPDATE gym_memberships gm JOIN products p ON gm.productId = p.productId " +
                 "SET gm.gymId = ?, gm.durationInMonths = ?, p.price = ?, p.code = ? WHERE gm.membershipId = ?";
 
@@ -77,24 +77,24 @@ public class GymMembershipRepository implements GenericRepository<GymMembership>
             stmt.setInt(5, entity.getId());
             stmt.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException("Failed to update membership.", e);
         }
     }
 
     @Override
-    public void delete(GymMembership entity) {
+    public void delete(GymMembership entity) throws SQLException {
         String sql = "DELETE FROM gym_memberships WHERE membershipId = ?";
         try (Connection connection = DatabaseConfiguration.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, entity.getId());
             stmt.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException("Failed to delete membership.", e);
         }
     }
 
     @Override
-    public int getSize() {
+    public int getSize() throws SQLException {
         String sql = "SELECT COUNT(*) FROM gym_memberships";
         try (Connection connection = DatabaseConfiguration.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -103,12 +103,12 @@ public class GymMembershipRepository implements GenericRepository<GymMembership>
                 return rs.getInt(1);
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException("Failed to get size.", e);
         }
         return 0;
     }
 
-    public List<Integer> getGymIdsOfMembershipsWithPricesWithinALimit(Double startPrice, Double endPrice) {
+    public List<Integer> getGymIdsOfMembershipsWithPricesWithinALimit(Double startPrice, Double endPrice) throws SQLException {
         List<Integer> ids = new ArrayList<>();
         String sql = "SELECT gm.gymId FROM gym_memberships gm JOIN products p ON gm.productId = p.productId " +
                 "WHERE p.price BETWEEN ? AND ?";
@@ -121,12 +121,12 @@ public class GymMembershipRepository implements GenericRepository<GymMembership>
                 ids.add(rs.getInt("gymId"));
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException("Failed to get gym ids of memberships.", e);
         }
         return ids;
     }
 
-    public void changeMembershipPricesOfSelectGym(Integer gymId, Integer percent) {
+    public void changeMembershipPricesOfSelectGym(Integer gymId, Integer percent) throws SQLException {
         String sql = "UPDATE products p JOIN gym_memberships gm ON p.productId = gm.productId " +
                 "SET p.price = p.price + (p.price * ? / 100) WHERE gm.gymId = ?";
         try (Connection connection = DatabaseConfiguration.getConnection();
@@ -135,7 +135,7 @@ public class GymMembershipRepository implements GenericRepository<GymMembership>
             stmt.setInt(2, gymId);
             stmt.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException("Failed to change membership prices.", e);
         }
     }
 }

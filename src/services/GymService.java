@@ -30,7 +30,7 @@ public class GymService {
         return instance;
     }
 
-    public void registerNewEntity(String name, String description, Integer capacity, Integer locationId) throws InvalidDataException {
+    public void registerNewEntity(String name, String description, Integer capacity, Integer locationId) throws InvalidDataException, SQLException {
         if (name == null || name.trim().isEmpty()) {
             throw new InvalidDataException("Invalid name");
         }
@@ -47,14 +47,14 @@ public class GymService {
         gymRepo.add(entity);
     }
 
-    public Gym get(int index) throws InvalidDataException {
+    public Gym get(int index) throws InvalidDataException, SQLException {
         if (index <= 0) {
             throw new InvalidDataException("Index can't be lower than or equal to 0");
         }
         return gymRepo.get(index);
     }
 
-    public void update(int index) throws InvalidDataException {
+    public void update(int index) throws InvalidDataException, SQLException {
         if (index <= 0) {
             throw new InvalidDataException("Index can't be lower than or equal to 0");
         }
@@ -63,7 +63,7 @@ public class GymService {
         gymRepo.update(gym);
     }
 
-    public void delete(int index) throws InvalidDataException {
+    public void delete(int index) throws InvalidDataException, SQLException {
         if (index <= 0) {
             throw new InvalidDataException("Index can't be lower than or equal to 0");
         }
@@ -74,7 +74,7 @@ public class GymService {
         gymRepo.delete(gym);
     }
 
-    public List<Gym> findGymBasedOnMembershipPrices(double startPrice, double endPrice) throws InvalidDataException {
+    public List<Gym> findGymBasedOnMembershipPrices(double startPrice, double endPrice) throws InvalidDataException, SQLException {
         if (startPrice <= 0 || endPrice <= 0) {
             throw new InvalidDataException("Prices can't be lower than 0");
         }
@@ -85,22 +85,14 @@ public class GymService {
         return gymRepo.findGymBasedOnMembershipPrices(startPrice, endPrice);
     }
 
-    public void changeMembershipPrices(GymMembershipRepository membershipRepository, String gymName, Integer percent) throws InvalidDataException {
-        if (gymName == null || gymName.trim().isEmpty()) {
-            throw new InvalidDataException("Invalid gym name");
-        }
-        if (percent == 0) {
-            throw new InvalidDataException("Invalid percent. Must be higher or lower than 0.");
-        }
-        auditService.logAction("Changing membership prices");
-        gymRepo.changeMembershipPrices(membershipRepository, gymName, percent);
-        System.out.println("Changes were made successfully!");
-    }
-
-    public void changeMembershipPrices(String gymName, Integer percent) {
+    public void changeMembershipPrices(String gymName, Integer percent) throws SQLException {
         if (percent == null || percent < 0) {
             throw new IllegalArgumentException("Percentage must be a positive integer");
         }
+        if (gymName == null || gymName.isEmpty()) {
+            throw new IllegalArgumentException("Name of gym can't be empty");
+        }
+
         gymRepo.changeMembershipPrices(gymName, percent);
     }
 

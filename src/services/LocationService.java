@@ -9,6 +9,7 @@ import repositories.EventRepository;
 import repositories.GymRepository;
 import repositories.LocationRepository;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,19 +32,25 @@ public class LocationService {
         return instance;
     }
 
-    public void registerNewEntity(String countryName, String cityName, double latitude, double longitude) throws InvalidDataException {
+    public void registerNewEntity(String countryName, String cityName, double latitude, double longitude) throws InvalidDataException, SQLException {
+        if (countryName == null || countryName.trim().isEmpty()) {
+            throw new IllegalArgumentException("Country name can't be empty");
+        }
+        if (cityName == null || cityName.trim().isEmpty()) {
+            throw new IllegalArgumentException("City name can't be empty");
+        }
         Location entity = new Location(countryName, cityName, latitude, longitude);
         locationRepo.add(entity);
     }
 
-    public Location get(int index) throws InvalidDataException {
+    public Location get(int index) throws InvalidDataException, SQLException {
         if (index < 0) {
             throw new InvalidDataException("Index can't be lower than 0");
         }
         return locationRepo.get(index);
     }
 
-    public void update(int index) throws InvalidDataException {
+    public void update(int index) throws InvalidDataException, SQLException {
         if (index < 0) {
             throw new InvalidDataException("Index can't be lower than 0");
         }
@@ -51,7 +58,7 @@ public class LocationService {
         locationRepo.update(location);
     }
 
-    public void delete(int index) throws InvalidDataException {
+    public void delete(int index) throws InvalidDataException, SQLException {
         if (index < 0) {
             throw new InvalidDataException("Index can't be lower than 0");
         }
@@ -59,7 +66,7 @@ public class LocationService {
         locationRepo.delete(location);
     }
 
-    public List<Location> getMostFrequentEventLocations() {
+    public List<Location> getMostFrequentEventLocations() throws SQLException {
         auditService.logAction("Search for most frequent locations for events");
         return locationRepo.getMostFrequentEventLocations();
     }

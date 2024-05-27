@@ -21,7 +21,7 @@ public class EventRepository implements GenericRepository<Event> {
 
 
     @Override
-    public void add(Event entity) {
+    public void add(Event entity) throws SQLException {
         String sql = "CALL INSERT_EVENT(?, ?, ?, ?, ?, ?, ?)";
         try (Connection connection = DatabaseConfiguration.getConnection();
              CallableStatement stmt = connection.prepareCall(sql)) {
@@ -34,12 +34,12 @@ public class EventRepository implements GenericRepository<Event> {
             stmt.setInt(7, entity.getLocationId());
             stmt.execute();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException("Failed to add new event.", e);
         }
     }
 
     @Override
-    public Event get(int id) {
+    public Event get(int id) throws SQLException {
         Event event = null;
 
         String eventSql = "SELECT * FROM events WHERE eventId = ?";
@@ -61,14 +61,14 @@ public class EventRepository implements GenericRepository<Event> {
                 event = new Event(eventId, startDate.toLocalDate(), endDate.toLocalDate(), name, description, capacity, locationId);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new SQLException("Failed to get event.", e);
         }
 
         return event;
     }
 
     @Override
-    public void update(Event entity) {
+    public void update(Event entity) throws SQLException {
         String updateEventSql = "UPDATE events SET startDate = ?, endDate = ?, name = ?, description = ?, capacity = ?, locationId = ? WHERE eventId = ?";
 
         System.out.println("Start date:");
@@ -96,12 +96,12 @@ public class EventRepository implements GenericRepository<Event> {
             eventQuery.setInt(7, entity.getId());
             eventQuery.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new SQLException("Failed to update event.", e);
         }
     }
 
     @Override
-    public void delete(Event entity) {
+    public void delete(Event entity) throws SQLException {
         String deleteEventSql = "DELETE FROM events WHERE eventId = ?";
 
         try (Connection connection = DatabaseConfiguration.getConnection();
@@ -110,11 +110,11 @@ public class EventRepository implements GenericRepository<Event> {
             eventQuery.setInt(1, entity.getId());
             eventQuery.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException("Failed to delete event.", e);
         }
     }
 
-    public void deleteOldEvents() {
+    public void deleteOldEvents() throws SQLException {
         String sql = "DELETE FROM events WHERE endDate < ?";
 
         try (Connection connection = DatabaseConfiguration.getConnection();
@@ -124,7 +124,7 @@ public class EventRepository implements GenericRepository<Event> {
 
             stmt.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException("Failed to delete old events.", e);
         }
     }
 
@@ -133,7 +133,7 @@ public class EventRepository implements GenericRepository<Event> {
         return storage.length;
     }
 
-    public List<Event> getAllEventsFromAPeriodAndACity(Date startDate, Date endDate, String city) {
+    public List<Event> getAllEventsFromAPeriodAndACity(Date startDate, Date endDate, String city) throws SQLException {
         String sql = "SELECT e.* FROM events e " +
                 "JOIN locations l ON e.locationId = l.locationId " +
                 "WHERE l.cityName = ? AND e.startDate >= ? AND e.endDate <= ?";
@@ -162,7 +162,7 @@ public class EventRepository implements GenericRepository<Event> {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException("Failed to get all events.", e);
         }
 
         return events;
