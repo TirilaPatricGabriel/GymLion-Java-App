@@ -22,7 +22,6 @@ public class FitnessChallengeRepository implements GenericRepository<FitnessChal
             stmt.setInt(3, entity.getPoints());
             stmt.executeUpdate();
 
-            // Retrieve the generated fitness challenge ID
             ResultSet rs = stmt.getGeneratedKeys();
             if (rs.next()) {
                 int generatedId = rs.getInt(1);
@@ -131,7 +130,6 @@ public class FitnessChallengeRepository implements GenericRepository<FitnessChal
              PreparedStatement selectStmt = connection.prepareStatement(selectSql);
              PreparedStatement updateStmt = connection.prepareStatement(updateSql)) {
 
-            // Step 1: Identify challenges to update
             selectStmt.setInt(1, numberOfCompletions);
             ResultSet rs = selectStmt.executeQuery();
             List<Integer> challengeIdsToUpdate = new ArrayList<>();
@@ -140,7 +138,6 @@ public class FitnessChallengeRepository implements GenericRepository<FitnessChal
                 challengeIdsToUpdate.add(rs.getInt("challengeId"));
             }
 
-            // Step 2: Perform the update
             for (Integer challengeId : challengeIdsToUpdate) {
                 updateStmt.setInt(1, points);
                 updateStmt.setInt(2, challengeId);

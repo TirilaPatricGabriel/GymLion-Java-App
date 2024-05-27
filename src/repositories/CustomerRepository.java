@@ -11,10 +11,6 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * Repositories are responsible for interacting with the storage of entities. Usually a 1-to-1 relation with the
- * entities. Any entity that should be persisted, should have a Repo.
- * */
 public class CustomerRepository implements GenericRepository<Customer> {
 
     private Customer[] storage = new Customer[10];

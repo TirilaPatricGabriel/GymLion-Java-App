@@ -18,7 +18,6 @@ public class InvestorRepository implements GenericRepository<Investor> {
             stmt.setDouble(2, entity.getContractValue());
             stmt.executeUpdate();
 
-            // Retrieve the generated investor ID
             ResultSet rs = stmt.getGeneratedKeys();
             if (rs.next()) {
                 int generatedId = rs.getInt(1);

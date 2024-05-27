@@ -10,10 +10,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
-/**
- * Repositories are responsible for interacting with the storage of entities. Usually a 1-to-1 relation with the
- * entities. Any entity that should be persisted, should have a Repo.
- * */
 public class AthleteRepository implements GenericRepository<Athlete> {
 
     private Athlete[] storage = new Athlete[100];
@@ -134,18 +130,14 @@ public class AthleteRepository implements GenericRepository<Athlete> {
              PreparedStatement competitionAthleteStmt = connection.prepareStatement(deleteCompetitionAthletesSql);
              PreparedStatement athleteStmt = connection.prepareStatement(deleteAthleteSql)) {
 
-            // Start a transaction
             connection.setAutoCommit(false);
 
-            // Delete from competition_athletes
             competitionAthleteStmt.setInt(1, entity.getId());
             competitionAthleteStmt.executeUpdate();
 
-            // Delete from athletes
             athleteStmt.setInt(1, entity.getId());
             athleteStmt.executeUpdate();
 
-            // Commit transaction
             connection.commit();
 
         } catch (SQLException e) {

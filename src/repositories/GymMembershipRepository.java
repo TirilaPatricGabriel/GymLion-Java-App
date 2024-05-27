@@ -23,7 +23,6 @@ public class GymMembershipRepository implements GenericRepository<GymMembership>
             stmt.setString(5, entity.getCode());
             stmt.execute();
 
-            // Retrieve the generated membership ID
             int generatedId = stmt.getInt(1);
             entity.setId(generatedId);
         } catch (SQLException e) {

@@ -14,9 +14,7 @@ public class AuditService {
     private static AuditService instance;
 
     private AuditService() {
-        // Initialize the file if necessary (e.g., write headers if the file is new)
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH, true))) {
-            // Check if the file is empty and write the header
             File file = new File(FILE_PATH);
             if (file.length() == 0) {
                 writer.write("action,timestamp");
@@ -42,11 +40,9 @@ public class AuditService {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH, true))) {
             System.out.println("LOG ENTRY: " + logEntry);
 
-            // Debug: Print absolute file path
             File file = new File(FILE_PATH);
             System.out.println("Absolute File Path: " + file.getAbsolutePath());
 
-            // Check if file exists and is writable
             if (file.exists()) {
                 System.out.println("File exists.");
                 if (file.canWrite()) {
@@ -60,7 +56,7 @@ public class AuditService {
 
             writer.write(logEntry);
             writer.newLine();
-            writer.flush();  // Ensure the buffer is flushed
+            writer.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -68,8 +64,5 @@ public class AuditService {
 
     public static void main(String[] args) {
         AuditService auditService = AuditService.getInstance();
-//        auditService.logAction("Application started");
-//        auditService.logAction("User logged in");
-//        auditService.logAction("Performed some action");
     }
 }
